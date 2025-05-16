@@ -22,6 +22,9 @@ const Logo: React.FC<LogoProps> = ({ className = '', size = 'medium', withText =
         alt="MyHelper Logo" 
         className={`${sizeClasses[size]} ${!withText ? 'rounded-full' : ''}`}
       />
+      {withText && (
+        <span className="ml-2 font-bold text-blue-600 text-xl">MyHelper</span>
+      )}
     </Link>
   );
 };

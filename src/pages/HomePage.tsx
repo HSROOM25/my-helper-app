@@ -18,22 +18,28 @@ const HomePage = () => {
             <Logo size="medium" withText={true} />
           </div>
           <div className="hidden md:flex space-x-6">
-            <Button variant="ghost" className="flex items-center gap-2">
-              <HomeIcon size={18} />
-              Home
-            </Button>
-            <Button variant="ghost" className="flex items-center gap-2">
-              <MenuIcon size={18} />
-              Services
-            </Button>
+            <Link to="/">
+              <Button variant="ghost" className="flex items-center gap-2 bg-gray-100">
+                <HomeIcon size={18} />
+                Home
+              </Button>
+            </Link>
+            <Link to="/services">
+              <Button variant="ghost" className="flex items-center gap-2">
+                <MenuIcon size={18} />
+                Services
+              </Button>
+            </Link>
             <Button variant="ghost" className="flex items-center gap-2">
               <HelpCircleIcon size={18} />
               Help & Support
             </Button>
-            <Button variant="ghost" className="flex items-center gap-2">
-              <InfoIcon size={18} />
-              About
-            </Button>
+            <Link to="/about">
+              <Button variant="ghost" className="flex items-center gap-2">
+                <InfoIcon size={18} />
+                About
+              </Button>
+            </Link>
           </div>
           <div className="flex items-center space-x-3">
             <Button variant="ghost" className="relative">
@@ -176,9 +182,9 @@ const HomePage = () => {
             <div>
               <h4 className="font-bold mb-4">Quick Links</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="hover:underline">Home</a></li>
-                <li><a href="#" className="hover:underline">About Us</a></li>
-                <li><a href="#" className="hover:underline">Services</a></li>
+                <li><Link to="/" className="hover:underline">Home</Link></li>
+                <li><Link to="/about" className="hover:underline">About Us</Link></li>
+                <li><Link to="/services" className="hover:underline">Services</Link></li>
                 <li><a href="#" className="hover:underline">FAQ</a></li>
               </ul>
             </div>
