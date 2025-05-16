@@ -18,7 +18,7 @@ const Logo: React.FC<LogoProps> = ({ className = '', size = 'medium', withText =
   return (
     <Link to="/" className={`flex items-center ${className}`}>
       <img 
-        src="/images/logo.png" 
+        src="/lovable-uploads/013eac99-6fd8-4dc3-a892-a0e24df377a9.png" 
         alt="MyHelper Logo" 
         className={`${sizeClasses[size]} ${!withText ? 'rounded-full' : ''}`}
       />

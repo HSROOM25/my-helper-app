@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -148,7 +147,8 @@ const RegisterPage = () => {
               <div className="p-4 border border-blue-200 bg-blue-50 rounded-md">
                 <p className="text-sm text-blue-700">
                   <strong>Note:</strong> A registration fee of R250 is required to activate your worker account. 
-                  You will be prompted to make payment after registration.
+                  You will be prompted to make payment after registration. After registration, you'll need to complete your 
+                  profile with bio, work experience, nationality, and address information.
                 </p>
               </div>
             )}
