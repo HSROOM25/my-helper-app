@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from 'react-router-dom';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import Logo from '@/components/Logo';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,7 +24,7 @@ const LoginPage = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-4">
-            <Link to="/" className="text-2xl font-bold text-blue-600">MyHelper</Link>
+            <Logo size="large" />
           </div>
           <CardTitle className="text-2xl font-bold text-center">Sign in to your account</CardTitle>
           <CardDescription className="text-center">

@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from 'react-router-dom';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import Logo from '@/components/Logo';
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -38,7 +39,7 @@ const RegisterPage = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-4">
-            <Link to="/" className="text-2xl font-bold text-blue-600">MyHelper</Link>
+            <Logo size="large" />
           </div>
           <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
           <CardDescription className="text-center">

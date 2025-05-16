@@ -2,11 +2,11 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BellIcon, HelpCircleIcon, UserIcon, HomeIcon, MenuIcon, InfoIcon, ShieldIcon, MessageSquareIcon } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BellIcon, HelpCircleIcon, UserIcon, HomeIcon, MenuIcon, InfoIcon } from "lucide-react";
 import { Link } from 'react-router-dom';
+import Logo from '@/components/Logo';
 
 const HomePage = () => {
   return (
@@ -15,7 +15,7 @@ const HomePage = () => {
       <nav className="bg-white shadow-md p-4">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-blue-600">MyHelper</span>
+            <Logo size="medium" withText={true} />
           </div>
           <div className="hidden md:flex space-x-6">
             <Button variant="ghost" className="flex items-center gap-2">
@@ -53,6 +53,9 @@ const HomePage = () => {
       {/* Hero Section */}
       <section className="py-16 px-4">
         <div className="container mx-auto text-center">
+          <div className="flex justify-center mb-6">
+            <Logo size="large" withText={true} className="mx-auto" />
+          </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-800">Find Reliable Helpers For Your Needs</h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Connect with verified workers for all your household and business services in one place.
