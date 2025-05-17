@@ -1,14 +1,18 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link } from 'react-router-dom';
-import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { EyeIcon, EyeOffIcon, CheckCircle } from 'lucide-react';
 import Logo from '@/components/Logo';
+import { useToast } from "@/hooks/use-toast";
 
 const RegisterPage = () => {
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [accountType, setAccountType] = useState('employer');
   const [formData, setFormData] = useState({
@@ -18,6 +22,8 @@ const RegisterPage = () => {
     password: '',
     confirmPassword: ''
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -25,12 +31,67 @@ const RegisterPage = () => {
       ...prev,
       [name]: value
     }));
+    // Clear error when user types
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    
+    // Required fields validation
+    if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
+    if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
+    if (!formData.email.trim()) newErrors.email = 'Email is required';
+    else if (!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = 'Email is invalid';
+    
+    if (!formData.password) newErrors.password = 'Password is required';
+    else if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+    
+    if (!formData.confirmPassword) newErrors.confirmPassword = 'Please confirm your password';
+    else if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // This is where we would handle registration logic
-    console.log('Registration attempt with:', accountType, formData);
+    
+    if (!validateForm()) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Here we would usually make an API call to register the user
+      // For now, we'll just simulate the registration process
+      console.log('Registration data:', { ...formData, accountType });
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast({
+        title: "Registration successful!",
+        description: `Your ${accountType} account has been created.`,
+      });
+      
+      // If worker account, would redirect to worker profile completion page
+      // For now, we'll just redirect to the home page
+      navigate('/');
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast({
+        title: "Registration failed",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -79,7 +140,11 @@ const RegisterPage = () => {
                   required 
                   value={formData.firstName}
                   onChange={handleChange}
+                  className={errors.firstName ? "border-red-500" : ""}
                 />
+                {errors.firstName && (
+                  <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last Name</Label>
@@ -90,7 +155,11 @@ const RegisterPage = () => {
                   required 
                   value={formData.lastName}
                   onChange={handleChange}
+                  className={errors.lastName ? "border-red-500" : ""}
                 />
+                {errors.lastName && (
+                  <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>
+                )}
               </div>
             </div>
             <div className="space-y-2">
@@ -103,7 +172,11 @@ const RegisterPage = () => {
                 required 
                 value={formData.email}
                 onChange={handleChange}
+                className={errors.email ? "border-red-500" : ""}
               />
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -116,6 +189,7 @@ const RegisterPage = () => {
                   required
                   value={formData.password}
                   onChange={handleChange}
+                  className={errors.password ? "border-red-500" : ""}
                 />
                 <button 
                   type="button" 
@@ -129,6 +203,9 @@ const RegisterPage = () => {
                   )}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
@@ -140,7 +217,11 @@ const RegisterPage = () => {
                 required
                 value={formData.confirmPassword}
                 onChange={handleChange}
+                className={errors.confirmPassword ? "border-red-500" : ""}
               />
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
+              )}
             </div>
 
             {accountType === 'worker' && (
@@ -153,7 +234,13 @@ const RegisterPage = () => {
               </div>
             )}
 
-            <Button type="submit" className="w-full">Create Account</Button>
+            <Button 
+              type="submit" 
+              className="w-full"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Creating account...' : 'Create Account'}
+            </Button>
           </form>
         </CardContent>
         <CardFooter className="flex justify-center">
