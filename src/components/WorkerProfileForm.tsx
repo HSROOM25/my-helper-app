@@ -17,7 +17,11 @@ const countries = [
   "Algeria", "Tunisia", "Sudan", "Rwanda", "Malawi"
 ];
 
-const WorkerProfileForm: React.FC = () => {
+interface WorkerProfileFormProps {
+  onSubmit?: (data: any) => void;
+}
+
+const WorkerProfileForm: React.FC<WorkerProfileFormProps> = ({ onSubmit }) => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     bio: '',
@@ -53,6 +57,12 @@ const WorkerProfileForm: React.FC = () => {
     e.preventDefault();
     console.log('Profile data:', formData, 'Profile image:', profileImage);
     // Here you would typically send the data to your backend
+    if (onSubmit) {
+      onSubmit({
+        ...formData,
+        profileImage
+      });
+    }
   };
 
   return (

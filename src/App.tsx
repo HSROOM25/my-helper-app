@@ -11,6 +11,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import AboutPage from './pages/AboutPage';
 import ServicesPage from './pages/ServicesPage';
+import WorkerProfilePage from './pages/WorkerProfilePage';
+import WorkerPaymentPage from './pages/WorkerPaymentPage';
 
 const queryClient = new QueryClient();
 
@@ -26,6 +28,8 @@ const App = () => (
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/services" element={<ServicesPage />} />
+          <Route path="/worker-profile" element={<WorkerProfilePage />} />
+          <Route path="/worker-payment" element={<WorkerPaymentPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>

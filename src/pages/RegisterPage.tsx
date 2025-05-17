@@ -84,9 +84,15 @@ const RegisterPage = () => {
         description: `Your ${accountType} account has been created.`,
       });
       
-      // Redirect to home page after successful registration
+      // Redirect based on account type
       setTimeout(() => {
-        navigate('/');
+        if (accountType === 'worker') {
+          // Redirect workers to profile completion page
+          navigate('/worker-profile');
+        } else {
+          // Redirect employers to the home page
+          navigate('/');
+        }
       }, 1500);
     } catch (error) {
       console.error('Registration error:', error);
