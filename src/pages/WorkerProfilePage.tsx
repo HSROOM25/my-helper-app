@@ -10,11 +10,14 @@ const WorkerProfilePage = () => {
   const { toast } = useToast();
 
   const handleProfileSubmit = (profileData: any) => {
+    console.log('Profile submitted:', profileData);
+    
     toast({
       title: "Profile saved!",
       description: "Your profile information has been updated.",
     });
     
+    console.log('Redirecting to payment page...');
     // Next, redirect to payment page
     navigate('/worker-payment');
   };

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { CreditCard, CheckCircle } from 'lucide-react';
 
@@ -13,6 +13,7 @@ const WorkerPaymentPage = () => {
   const [isComplete, setIsComplete] = useState(false);
 
   const handlePayment = async () => {
+    console.log('Processing payment...');
     setIsProcessing(true);
     
     // Simulate payment processing
@@ -26,6 +27,7 @@ const WorkerPaymentPage = () => {
       description: "Your worker account has been fully activated.",
     });
     
+    console.log('Payment complete, redirecting to home page...');
     // Redirect to home page after a delay
     setTimeout(() => {
       navigate('/');

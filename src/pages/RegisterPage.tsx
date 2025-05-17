@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link, useNavigate } from 'react-router-dom';
-import { EyeIcon, EyeOffIcon, CheckCircle } from 'lucide-react';
+import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import Logo from '@/components/Logo';
 import { useToast } from "@/hooks/use-toast";
 
@@ -70,6 +70,7 @@ const RegisterPage = () => {
     
     setIsSubmitting(true);
     console.log('Validation successful, proceeding with registration...');
+    console.log('Account type:', accountType);
     
     try {
       // Here we would usually make an API call to register the user
@@ -85,15 +86,15 @@ const RegisterPage = () => {
       });
       
       // Redirect based on account type
-      setTimeout(() => {
-        if (accountType === 'worker') {
-          // Redirect workers to profile completion page
-          navigate('/worker-profile');
-        } else {
-          // Redirect employers to the home page
-          navigate('/');
-        }
-      }, 1500);
+      if (accountType === 'worker') {
+        console.log('Redirecting worker to profile completion page...');
+        // Redirect workers to profile completion page
+        navigate('/worker-profile');
+      } else {
+        console.log('Redirecting employer to home page...');
+        // Redirect employers to the home page
+        navigate('/');
+      }
     } catch (error) {
       console.error('Registration error:', error);
       toast({
