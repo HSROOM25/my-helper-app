@@ -61,10 +61,15 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted, validating...');
     
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      console.log('Validation failed', errors);
+      return;
+    }
     
     setIsSubmitting(true);
+    console.log('Validation successful, proceeding with registration...');
     
     try {
       // Here we would usually make an API call to register the user
@@ -79,9 +84,10 @@ const RegisterPage = () => {
         description: `Your ${accountType} account has been created.`,
       });
       
-      // If worker account, would redirect to worker profile completion page
-      // For now, we'll just redirect to the home page
-      navigate('/');
+      // Redirect to home page after successful registration
+      setTimeout(() => {
+        navigate('/');
+      }, 1500);
     } catch (error) {
       console.error('Registration error:', error);
       toast({
