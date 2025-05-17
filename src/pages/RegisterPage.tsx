@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +23,7 @@ const RegisterPage = () => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -74,26 +74,26 @@ const RegisterPage = () => {
     
     try {
       // Here we would usually make an API call to register the user
-      // For now, we'll just simulate the registration process
-      console.log('Registration data:', { ...formData, accountType });
-      
-      // Simulate API delay
+      // Simulating successful registration
       await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setIsSubmitted(true);
+      setIsSubmitting(false);
       
       toast({
         title: "Registration successful!",
-        description: `Your ${accountType} account has been created.`,
+        description: accountType === 'worker' 
+          ? "Please complete your worker profile."
+          : "Please complete your profile information.",
       });
       
-      // Redirect based on account type
+      // Redirect both account types to profile completion
       if (accountType === 'worker') {
         console.log('Redirecting worker to profile completion page...');
-        // Redirect workers to profile completion page
         navigate('/worker-profile');
       } else {
-        console.log('Redirecting employer to home page...');
-        // Redirect employers to the home page
-        navigate('/');
+        console.log('Redirecting employer to profile completion page...');
+        navigate('/employer-profile');
       }
     } catch (error) {
       console.error('Registration error:', error);
@@ -102,8 +102,6 @@ const RegisterPage = () => {
         description: "Something went wrong. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
