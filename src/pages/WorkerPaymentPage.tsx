@@ -1,245 +1,255 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { CreditCard, CheckCircle, Upload, CreditCard as Bank, Mail } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/hooks/use-toast';
+import { AlertCircle, Check } from 'lucide-react';
 
 const WorkerPaymentPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isComplete, setIsComplete] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("credit-card");
-  const [proofOfPayment, setProofOfPayment] = useState<File | null>(null);
-  const [verificationCode, setVerificationCode] = useState("");
-  const [showVerification, setShowVerification] = useState(false);
-  const [bankReference, setBankReference] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState('eft');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [proofFile, setProofFile] = useState<File | null>(null);
+  const [verificationStatus, setVerificationStatus] = useState<'pending' | 'verified' | null>(null);
+  const [activationCode, setActivationCode] = useState<string | null>(null);
 
-  const handlePayment = async () => {
-    console.log('Processing payment with method:', selectedPaymentMethod);
-    setIsProcessing(true);
-    
-    if (selectedPaymentMethod === "credit-card") {
-      // Simulate credit card payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      completePayment();
-    } else if (selectedPaymentMethod === "eft" || selectedPaymentMethod === "paypal") {
-      // For EFT or PayPal, show verification step
-      setIsProcessing(false);
-      setShowVerification(true);
-    }
-  };
-
-  const handleProofUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setProofOfPayment(e.target.files[0]);
-    }
-  };
-
-  const handleVerificationSubmit = async () => {
-    console.log('Verifying payment with code:', verificationCode);
-    setIsProcessing(true);
-    
-    // Simulate verification process
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Check if verification code is correct (for demo purposes, accept any 6-digit code)
-    if (verificationCode.length === 6 && /^\d+$/.test(verificationCode)) {
-      completePayment();
-    } else {
-      setIsProcessing(false);
+  const handleSubmitProof = async () => {
+    if (!proofFile) {
       toast({
-        title: "Verification failed",
-        description: "Please check your verification code and try again.",
+        title: "No file selected",
+        description: "Please upload proof of payment first.",
         variant: "destructive"
       });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    // Simulate upload and verification process
+    try {
+      console.log('Uploading payment proof:', proofFile.name);
+      
+      // Simulate API processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      setVerificationStatus('verified');
+      setActivationCode('WORK' + Math.random().toString(36).substring(2, 8).toUpperCase());
+      
+      toast({
+        title: "Payment verified!",
+        description: "Your payment has been verified successfully.",
+      });
+    } catch (error) {
+      console.error('Payment verification error:', error);
+      toast({
+        title: "Verification failed",
+        description: "There was an error verifying your payment. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const completePayment = () => {
-    setIsProcessing(false);
-    setIsComplete(true);
-    
-    toast({
-      title: "Payment successful!",
-      description: "Your worker account has been fully activated.",
-    });
-    
-    console.log('Payment complete, redirecting to home page...');
-    // Redirect to home page after a delay
-    setTimeout(() => {
-      navigate('/');
-    }, 2000);
+  const handleContinueToHome = () => {
+    console.log('Registration complete. Redirecting to home...');
+    navigate('/');
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setProofFile(e.target.files[0]);
+      setVerificationStatus('pending');
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md mx-auto space-y-8">
+      <div className="max-w-3xl mx-auto space-y-8">
         <Card>
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold">Worker Registration Fee</CardTitle>
+            <CardTitle className="text-2xl font-bold">Worker Registration Payment</CardTitle>
             <CardDescription>
-              Complete your registration by paying the annual worker registration fee
+              Complete your annual worker registration fee of R250 to activate your account
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="p-4 border rounded-md bg-muted">
-              <h3 className="font-medium text-lg">Registration Fee Details</h3>
-              <p className="text-sm mt-1">Annual Worker Registration: R250.00</p>
-              <p className="text-xs text-muted-foreground mt-2">
-                This fee covers your annual membership and allows employers to find and hire you through our platform.
+          <CardContent className="space-y-6">
+            <div className="p-4 bg-blue-50 text-blue-800 rounded-md flex items-start">
+              <AlertCircle className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
+              <p className="text-sm">
+                Your worker profile has been created. To activate your account, please complete the annual registration fee payment of R250.
               </p>
             </div>
-            
-            {isComplete ? (
-              <div className="flex flex-col items-center p-6 space-y-4">
-                <div className="bg-green-100 p-3 rounded-full">
-                  <CheckCircle className="h-10 w-10 text-green-600" />
-                </div>
-                <h3 className="font-medium text-lg">Payment Complete!</h3>
-                <p className="text-sm text-center">
-                  Your worker account has been fully activated. You will be redirected to the home page.
-                </p>
-              </div>
-            ) : showVerification ? (
-              <div className="space-y-6">
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Verification Required</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Please enter the verification code sent to your email after payment.
-                  </p>
-                  
-                  {selectedPaymentMethod === "eft" && (
-                    <div className="space-y-4 p-4 border rounded-md bg-muted">
-                      <h4 className="font-medium">Bank Details</h4>
-                      <div className="space-y-2 text-sm">
-                        <p><span className="font-medium">Capitec:</span> Account Number 123456789</p>
-                        <p><span className="font-medium">FNB:</span> Account Number 2345678888</p>
-                        <p className="text-xs italic mt-2">Please use your email as reference</p>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="reference">Your Payment Reference</Label>
-                        <Input 
-                          id="reference" 
-                          value={bankReference}
-                          onChange={(e) => setBankReference(e.target.value)}
-                          placeholder="Enter the reference you used"
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="proof">Upload Proof of Payment</Label>
-                        <div className="flex items-center space-x-2">
-                          <Input
-                            id="proof"
-                            type="file"
-                            accept="image/*,.pdf"
-                            onChange={handleProofUpload}
-                          />
-                          {proofOfPayment && (
-                            <div className="text-xs text-green-600 flex items-center">
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              Uploaded
-                            </div>
-                          )}
-                        </div>
-                      </div>
+
+            <Tabs defaultValue={paymentMethod} onValueChange={setPaymentMethod} className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="eft">Bank Transfer</TabsTrigger>
+                <TabsTrigger value="deposit">Bank Deposit</TabsTrigger>
+                <TabsTrigger value="paypal">PayPal</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="eft" className="space-y-4 pt-4">
+                <div className="p-4 border rounded-md">
+                  <h3 className="font-medium text-lg mb-2">EFT Payment Details</h3>
+                  <div className="space-y-3 text-sm">
+                    <div className="grid grid-cols-3">
+                      <span className="font-medium">Account Name:</span>
+                      <span className="col-span-2">Worker Platform (Pty) Ltd</span>
                     </div>
-                  )}
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="verification-code">Verification Code</Label>
-                    <InputOTP maxLength={6} value={verificationCode} onChange={setVerificationCode}>
-                      <InputOTPGroup>
-                        <InputOTPSlot index={0} />
-                        <InputOTPSlot index={1} />
-                        <InputOTPSlot index={2} />
-                        <InputOTPSlot index={3} />
-                        <InputOTPSlot index={4} />
-                        <InputOTPSlot index={5} />
-                      </InputOTPGroup>
-                    </InputOTP>
+                    <div className="grid grid-cols-3">
+                      <span className="font-medium">Bank:</span>
+                      <span className="col-span-2">Capitec Bank</span>
+                    </div>
+                    <div className="grid grid-cols-3">
+                      <span className="font-medium">Account Number:</span>
+                      <span className="col-span-2">123456789</span>
+                    </div>
+                    <div className="grid grid-cols-3">
+                      <span className="font-medium">Branch Code:</span>
+                      <span className="col-span-2">470010</span>
+                    </div>
+                    <div className="grid grid-cols-3">
+                      <span className="font-medium">Reference:</span>
+                      <span className="col-span-2">WORKER-{Math.floor(Math.random() * 10000)}</span>
+                    </div>
+                    <div className="grid grid-cols-3">
+                      <span className="font-medium">Amount:</span>
+                      <span className="col-span-2 font-bold">R250.00</span>
+                    </div>
                   </div>
-                  
-                  <Button 
-                    onClick={handleVerificationSubmit} 
-                    className="w-full" 
-                    disabled={isProcessing || (selectedPaymentMethod === "eft" && (!proofOfPayment || !bankReference))}
-                  >
-                    {isProcessing ? 'Verifying...' : 'Verify Payment'}
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="proof-of-payment">Upload Proof of Payment</Label>
+                  <Input 
+                    id="proof-of-payment" 
+                    type="file" 
+                    accept=".pdf,.jpg,.jpeg,.png" 
+                    onChange={handleFileChange}
+                  />
+                  <p className="text-xs text-gray-500">
+                    Accepted formats: PDF, JPG, PNG. Max size: 5MB
+                  </p>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="deposit" className="space-y-4 pt-4">
+                <div className="p-4 border rounded-md">
+                  <h3 className="font-medium text-lg mb-2">Bank Deposit Details</h3>
+                  <div className="space-y-3 text-sm">
+                    <div className="grid grid-cols-3">
+                      <span className="font-medium">Account Name:</span>
+                      <span className="col-span-2">Worker Platform (Pty) Ltd</span>
+                    </div>
+                    <div className="grid grid-cols-3">
+                      <span className="font-medium">Bank:</span>
+                      <span className="col-span-2">FNB</span>
+                    </div>
+                    <div className="grid grid-cols-3">
+                      <span className="font-medium">Account Number:</span>
+                      <span className="col-span-2">2345678888</span>
+                    </div>
+                    <div className="grid grid-cols-3">
+                      <span className="font-medium">Branch Code:</span>
+                      <span className="col-span-2">250655</span>
+                    </div>
+                    <div className="grid grid-cols-3">
+                      <span className="font-medium">Reference:</span>
+                      <span className="col-span-2">WORKER-{Math.floor(Math.random() * 10000)}</span>
+                    </div>
+                    <div className="grid grid-cols-3">
+                      <span className="font-medium">Amount:</span>
+                      <span className="col-span-2 font-bold">R250.00</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="proof-of-deposit">Upload Proof of Deposit</Label>
+                  <Input 
+                    id="proof-of-deposit" 
+                    type="file" 
+                    accept=".pdf,.jpg,.jpeg,.png" 
+                    onChange={handleFileChange}
+                  />
+                  <p className="text-xs text-gray-500">
+                    Accepted formats: PDF, JPG, PNG. Max size: 5MB
+                  </p>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="paypal" className="space-y-4 pt-4">
+                <div className="p-4 border rounded-md">
+                  <h3 className="font-medium text-lg mb-2">PayPal Payment</h3>
+                  <p className="mb-4">
+                    Send R250.00 (approx $15 USD) to the following PayPal account:
+                  </p>
+                  <div className="p-3 bg-gray-100 rounded text-center mb-4 font-medium">
+                    payments@workerplatform.com
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Please include your name and email in the payment notes
+                  </p>
+                  <Button className="w-full" onClick={() => window.open('https://www.paypal.com')}>
+                    Pay with PayPal
                   </Button>
                 </div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <Tabs defaultValue="credit-card" onValueChange={setSelectedPaymentMethod}>
-                  <TabsList className="grid grid-cols-3 w-full">
-                    <TabsTrigger value="credit-card">Credit Card</TabsTrigger>
-                    <TabsTrigger value="eft">EFT</TabsTrigger>
-                    <TabsTrigger value="paypal">PayPal</TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="credit-card" className="space-y-4 pt-4">
-                    <div className="border rounded-md p-3 bg-gray-50 flex items-center space-x-3">
-                      <CreditCard className="h-5 w-5 text-muted-foreground" />
-                      <span className="text-sm">Credit or Debit Card Payment</span>
-                    </div>
-                    
-                    <Button 
-                      onClick={handlePayment} 
-                      className="w-full" 
-                      disabled={isProcessing}
-                    >
-                      {isProcessing ? 'Processing...' : 'Pay R250.00'}
-                    </Button>
-                  </TabsContent>
-                  
-                  <TabsContent value="eft" className="space-y-4 pt-4">
-                    <div className="border rounded-md p-3 bg-gray-50 flex items-center space-x-3">
-                      <Bank className="h-5 w-5 text-muted-foreground" />
-                      <span className="text-sm">Electronic Funds Transfer</span>
-                    </div>
-                    
-                    <div className="p-4 border rounded-md bg-muted space-y-2 text-sm">
-                      <p><span className="font-medium">Capitec:</span> Account Number 123456789</p>
-                      <p><span className="font-medium">FNB:</span> Account Number 2345678888</p>
-                      <p className="text-xs italic mt-2">Please use your email as reference</p>
-                    </div>
-                    
-                    <Button 
-                      onClick={handlePayment} 
-                      className="w-full" 
-                      disabled={isProcessing}
-                    >
-                      {isProcessing ? 'Processing...' : 'I\'ve Made the Payment'}
-                    </Button>
-                  </TabsContent>
-                  
-                  <TabsContent value="paypal" className="space-y-4 pt-4">
-                    <div className="border rounded-md p-3 bg-gray-50 flex items-center space-x-3">
-                      <Mail className="h-5 w-5 text-muted-foreground" />
-                      <span className="text-sm">PayPal Payment</span>
-                    </div>
-                    
-                    <Button 
-                      onClick={handlePayment} 
-                      className="w-full" 
-                      disabled={isProcessing}
-                    >
-                      {isProcessing ? 'Processing...' : 'Pay with PayPal'}
-                    </Button>
-                  </TabsContent>
-                </Tabs>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="proof-of-paypal">Upload PayPal Receipt Screenshot</Label>
+                  <Input 
+                    id="proof-of-paypal" 
+                    type="file" 
+                    accept=".pdf,.jpg,.jpeg,.png" 
+                    onChange={handleFileChange}
+                  />
+                  <p className="text-xs text-gray-500">
+                    Accepted formats: PDF, JPG, PNG. Max size: 5MB
+                  </p>
+                </div>
+              </TabsContent>
+            </Tabs>
+
+            {verificationStatus === 'verified' && activationCode && (
+              <div className="p-4 bg-green-50 border border-green-200 rounded-md space-y-3">
+                <div className="flex items-center">
+                  <div className="bg-green-100 p-1.5 rounded-full mr-3">
+                    <Check className="h-5 w-5 text-green-600" />
+                  </div>
+                  <h3 className="font-medium text-green-800">Payment Verified!</h3>
+                </div>
+                <p className="text-green-700">
+                  Your payment has been verified and your account is now activated.
+                </p>
+                <div className="bg-white p-3 rounded border border-green-200">
+                  <p className="text-sm font-medium mb-1">Your Activation Code:</p>
+                  <p className="text-lg font-bold text-center">{activationCode}</p>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Please save this code for your records. You may need it in the future.
+                  </p>
+                </div>
               </div>
             )}
           </CardContent>
+          <CardFooter className="flex justify-end space-x-4">
+            {verificationStatus === 'verified' ? (
+              <Button onClick={handleContinueToHome}>
+                Continue to Home
+              </Button>
+            ) : (
+              <Button 
+                onClick={handleSubmitProof} 
+                disabled={!proofFile || isSubmitting}
+              >
+                {isSubmitting ? 'Verifying...' : 'Submit Proof of Payment'}
+              </Button>
+            )}
+          </CardFooter>
         </Card>
       </div>
     </div>

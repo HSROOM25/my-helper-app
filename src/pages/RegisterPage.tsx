@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import Logo from '@/components/Logo';
 import { useToast } from "@/hooks/use-toast";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 
 const RegisterPage = () => {
   const { toast } = useToast();
@@ -18,12 +20,16 @@ const RegisterPage = () => {
     firstName: '',
     lastName: '',
     email: '',
+    phoneNumber: '',
     password: '',
     confirmPassword: ''
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showOTP, setShowOTP] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [verificationMethod, setVerificationMethod] = useState<'email' | 'phone'>('email');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -49,6 +55,9 @@ const RegisterPage = () => {
     if (!formData.email.trim()) newErrors.email = 'Email is required';
     else if (!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = 'Email is invalid';
     
+    if (!formData.phoneNumber.trim()) newErrors.phoneNumber = 'Phone number is required';
+    else if (!/^\+?\d{10,15}$/.test(formData.phoneNumber)) newErrors.phoneNumber = 'Phone number is invalid';
+    
     if (!formData.password) newErrors.password = 'Password is required';
     else if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
     
@@ -69,22 +78,48 @@ const RegisterPage = () => {
     }
     
     setIsSubmitting(true);
-    console.log('Validation successful, proceeding with registration...');
-    console.log('Account type:', accountType);
+    console.log('Validation successful, sending OTP...');
     
     try {
-      // Here we would usually make an API call to register the user
-      // Simulating successful registration
+      // Here we would call Africa's Talk API to send OTP
+      // Simulating API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setIsSubmitting(false);
+      setShowOTP(true);
+      
+      toast({
+        title: `OTP Sent!`,
+        description: `Please check your ${verificationMethod === 'email' ? 'email' : 'phone'} for the verification code.`,
+      });
+      
+      console.log(`OTP sent to user's ${verificationMethod}`);
+    } catch (error) {
+      console.error('OTP sending error:', error);
+      setIsSubmitting(false);
+      
+      toast({
+        title: "Failed to send OTP",
+        description: "Please check your contact information and try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleVerifyOTP = async () => {
+    setIsSubmitting(true);
+    
+    try {
+      // Here we would verify the OTP with Africa's Talk API
+      // Simulating API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       setIsSubmitted(true);
       setIsSubmitting(false);
       
       toast({
-        title: "Registration successful!",
-        description: accountType === 'worker' 
-          ? "Please complete your worker profile."
-          : "Please complete your profile information.",
+        title: "Account Activated!",
+        description: "Your account has been successfully verified.",
       });
       
       // Redirect both account types to profile completion
@@ -96,14 +131,104 @@ const RegisterPage = () => {
         navigate('/employer-profile');
       }
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('OTP verification error:', error);
+      setIsSubmitting(false);
+      
       toast({
-        title: "Registration failed",
-        description: "Something went wrong. Please try again.",
+        title: "Verification Failed",
+        description: "The OTP code you entered is incorrect. Please try again.",
         variant: "destructive",
       });
     }
   };
+
+  const resendOTP = async () => {
+    try {
+      // Here we would call Africa's Talk API to resend OTP
+      // Simulating API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast({
+        title: `OTP Resent!`,
+        description: `Please check your ${verificationMethod === 'email' ? 'email' : 'phone'} for the new verification code.`,
+      });
+    } catch (error) {
+      console.error('OTP resending error:', error);
+      
+      toast({
+        title: "Failed to resend OTP",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (showOTP) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1">
+            <div className="flex justify-center mb-4">
+              <Logo size="large" />
+            </div>
+            <CardTitle className="text-2xl font-bold text-center">Verify Your Account</CardTitle>
+            <CardDescription className="text-center">
+              Please enter the 6-digit code sent to your {verificationMethod === 'email' ? 'email' : 'phone'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Label>Verification Code</Label>
+              <div className="flex justify-center">
+                <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+            </div>
+            
+            <Button 
+              onClick={handleVerifyOTP} 
+              className="w-full"
+              disabled={otp.length !== 6 || isSubmitting}
+            >
+              {isSubmitting ? 'Verifying...' : 'Verify Code'}
+            </Button>
+            
+            <div className="text-sm text-center">
+              Didn't receive a code?{" "}
+              <button
+                type="button"
+                onClick={resendOTP}
+                className="text-blue-600 hover:underline font-medium"
+              >
+                Resend
+              </button>
+            </div>
+            
+            <div className="text-sm text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowOTP(false);
+                  setOtp("");
+                }}
+                className="text-gray-500 hover:underline"
+              >
+                Go back to registration
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -188,6 +313,45 @@ const RegisterPage = () => {
               {errors.email && (
                 <p className="text-red-500 text-xs mt-1">{errors.email}</p>
               )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phoneNumber">Phone Number</Label>
+              <Input 
+                id="phoneNumber" 
+                name="phoneNumber" 
+                placeholder="+27 123 456 7890" 
+                required 
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                className={errors.phoneNumber ? "border-red-500" : ""}
+              />
+              {errors.phoneNumber && (
+                <p className="text-red-500 text-xs mt-1">{errors.phoneNumber}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="verificationMethod">Verification Method</Label>
+              <div className="grid grid-cols-2 gap-4">
+                <Button
+                  type="button"
+                  variant={verificationMethod === 'email' ? 'default' : 'outline'}
+                  onClick={() => setVerificationMethod('email')}
+                  className="w-full"
+                >
+                  Email
+                </Button>
+                <Button
+                  type="button"
+                  variant={verificationMethod === 'phone' ? 'default' : 'outline'}
+                  onClick={() => setVerificationMethod('phone')}
+                  className="w-full"
+                >
+                  Phone
+                </Button>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                We'll send a verification code to your {verificationMethod === 'email' ? 'email' : 'phone'}.
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>

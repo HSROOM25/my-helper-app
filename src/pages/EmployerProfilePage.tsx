@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import WorkerProfileForm from '@/components/WorkerProfileForm';
+import EmployerProfileForm from '@/components/EmployerProfileForm';
 
 const EmployerProfilePage = () => {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const EmployerProfilePage = () => {
     
     toast({
       title: "Profile saved!",
-      description: "Your profile information has been updated.",
+      description: "Your employer profile has been created successfully.",
     });
     
     console.log('Redirecting to home page...');
@@ -33,7 +33,7 @@ const EmployerProfilePage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <WorkerProfileForm onSubmit={handleProfileSubmit} />
+            <EmployerProfileForm onSubmit={handleProfileSubmit} />
           </CardContent>
         </Card>
       </div>

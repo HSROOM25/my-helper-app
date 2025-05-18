@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link, useNavigate } from 'react-router-dom';
-import { EyeIcon, EyeOffIcon, Shield, User } from 'lucide-react';
+import { EyeIcon, EyeOffIcon, Shield, User, Mail } from 'lucide-react';
 import Logo from '@/components/Logo';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useToast } from "@/hooks/use-toast";
@@ -17,6 +17,9 @@ const LoginPage = () => {
   const [showMFA, setShowMFA] = useState(false);
   const [mfaCode, setMfaCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetSubmitted, setResetSubmitted] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -77,6 +80,102 @@ const LoginPage = () => {
       });
     }
   };
+
+  const handleForgotPasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      // This is where we would handle password reset logic
+      console.log('Password reset requested for:', resetEmail);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setResetSubmitted(true);
+      setIsSubmitting(false);
+      
+      toast({
+        title: "Password reset link sent",
+        description: "Please check your email for instructions to reset your password.",
+      });
+    } catch (error) {
+      console.error('Password reset error:', error);
+      setIsSubmitting(false);
+      toast({
+        title: "Password reset failed",
+        description: "Please check your email and try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Forgot password screen
+  if (showForgotPassword) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1">
+            <div className="flex justify-center mb-4">
+              <Logo size="large" />
+            </div>
+            <CardTitle className="text-2xl font-bold text-center">Reset your password</CardTitle>
+            <CardDescription className="text-center">
+              {resetSubmitted ? 
+                "We've sent you an email with instructions to reset your password." : 
+                "Enter your email address and we'll send you a link to reset your password."
+              }
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {resetSubmitted ? (
+              <div className="flex flex-col items-center justify-center py-4">
+                <Mail className="h-16 w-16 text-blue-500 mb-4" />
+                <p className="text-center text-gray-600 mb-4">
+                  Please check your inbox and follow the instructions to reset your password.
+                </p>
+                <Button 
+                  onClick={() => setShowForgotPassword(false)} 
+                  className="w-full mt-2"
+                >
+                  Back to Login
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={handleForgotPasswordSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="reset-email">Email</Label>
+                  <Input 
+                    id="reset-email" 
+                    type="email" 
+                    placeholder="name@example.com" 
+                    required 
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full"
+                  disabled={isSubmitting || !resetEmail}
+                >
+                  {isSubmitting ? 'Sending reset link...' : 'Send reset link'}
+                </Button>
+                <Button 
+                  type="button"
+                  variant="ghost" 
+                  className="w-full"
+                  onClick={() => setShowForgotPassword(false)}
+                >
+                  Back to login
+                </Button>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -146,9 +245,13 @@ const LoginPage = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
-                  <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline">
+                  <button 
+                    type="button" 
+                    onClick={() => setShowForgotPassword(true)}
+                    className="text-sm text-blue-600 hover:underline"
+                  >
                     Forgot password?
-                  </Link>
+                  </button>
                 </div>
                 <div className="relative">
                   <Input 

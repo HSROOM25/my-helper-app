@@ -15,6 +15,7 @@ import ServicesPage from './pages/ServicesPage';
 import WorkerProfilePage from './pages/WorkerProfilePage';
 import WorkerPaymentPage from './pages/WorkerPaymentPage';
 import EmployerProfilePage from './pages/EmployerProfilePage';
+import HelpSupportPage from './pages/HelpSupportPage';
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => {
             <Route path="/worker-profile" element={<WorkerProfilePage />} />
             <Route path="/employer-profile" element={<EmployerProfilePage />} />
             <Route path="/worker-payment" element={<WorkerPaymentPage />} />
+            <Route path="/help-support" element={<HelpSupportPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
