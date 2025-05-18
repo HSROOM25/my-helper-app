@@ -30,10 +30,12 @@ const HomePage = () => {
                 Services
               </Button>
             </Link>
-            <Button variant="ghost" className="flex items-center gap-2">
-              <HelpCircleIcon size={18} />
-              Help & Support
-            </Button>
+            <Link to="/help-support">
+              <Button variant="ghost" className="flex items-center gap-2">
+                <HelpCircleIcon size={18} />
+                Help & Support
+              </Button>
+            </Link>
             <Link to="/about">
               <Button variant="ghost" className="flex items-center gap-2">
                 <InfoIcon size={18} />
@@ -185,15 +187,15 @@ const HomePage = () => {
                 <li><Link to="/" className="hover:underline">Home</Link></li>
                 <li><Link to="/about" className="hover:underline">About Us</Link></li>
                 <li><Link to="/services" className="hover:underline">Services</Link></li>
-                <li><a href="#" className="hover:underline">FAQ</a></li>
+                <li><Link to="/help-support" className="hover:underline">Help & Support</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-bold mb-4">Legal</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="hover:underline">Terms of Use</a></li>
-                <li><a href="#" className="hover:underline">Privacy Policy</a></li>
-                <li><a href="#" className="hover:underline">Cookie Policy</a></li>
+                <li><Link to="/terms" className="hover:underline">Terms of Use</Link></li>
+                <li><Link to="/privacy" className="hover:underline">Privacy Policy</Link></li>
+                <li><Link to="/cookies" className="hover:underline">Cookie Policy</Link></li>
               </ul>
             </div>
             <div>

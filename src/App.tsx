@@ -38,6 +38,9 @@ const App = () => {
             <Route path="/employer-profile" element={<EmployerProfilePage />} />
             <Route path="/worker-payment" element={<WorkerPaymentPage />} />
             <Route path="/help-support" element={<HelpSupportPage />} />
+            <Route path="/terms" element={<NotFound />} />
+            <Route path="/privacy" element={<NotFound />} />
+            <Route path="/cookies" element={<NotFound />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
