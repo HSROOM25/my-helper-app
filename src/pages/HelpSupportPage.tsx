@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { MessageSquare, Search, HelpCircle, Mail } from 'lucide-react';
+import { MessageSquare, Search, HelpCircle, Mail, Phone, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
   Table,
@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const faqs = [
   {
@@ -66,6 +67,27 @@ const bankDetails = [
   { bank: "FNB", accountNumber: "2345678888", reference: "Your Email/Phone" },
 ];
 
+const supportContacts = [
+  { 
+    method: "Email",
+    contact: "support@example.com",
+    icon: <Mail className="h-5 w-5 mr-2 text-gray-600" />,
+    availability: "Responses within 24 hours" 
+  },
+  { 
+    method: "Phone",
+    contact: "+27 12 345 6789",
+    icon: <Phone className="h-5 w-5 mr-2 text-gray-600" />,
+    availability: "Mon-Fri 8am-5pm SAST" 
+  },
+  { 
+    method: "Live Chat",
+    contact: "Available on website",
+    icon: <MessageSquare className="h-5 w-5 mr-2 text-gray-600" />,
+    availability: "8am-5pm SAST" 
+  }
+];
+
 const HelpSupportPage = () => {
   const [contactForm, setContactForm] = useState({
     name: '',
@@ -76,6 +98,7 @@ const HelpSupportPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
+  const [activeTab, setActiveTab] = useState("faqs");
   const { toast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -91,11 +114,11 @@ const HelpSupportPage = () => {
     setIsSubmitting(true);
     
     try {
-      // Here we would handle contact form submission
+      // Here we would handle contact form submission to backend
       console.log('Contact form submitted:', contactForm);
       
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       toast({
         title: "Message sent!",
@@ -145,7 +168,7 @@ const HelpSupportPage = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="max-w-2xl mx-auto mb-12">
+        <div className="max-w-2xl mx-auto mb-8">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <Input 
@@ -156,186 +179,271 @@ const HelpSupportPage = () => {
             />
           </div>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* FAQs Section */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <HelpCircle className="mr-2" /> 
-                  Frequently Asked Questions
-                </CardTitle>
-                <CardDescription>
-                  Find answers to the most common questions about our platform
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Accordion type="single" collapsible className="w-full">
-                  {filteredFaqs.length > 0 ? (
-                    filteredFaqs.map((faq, index) => (
-                      <AccordionItem key={index} value={`item-${index}`}>
-                        <AccordionTrigger>{faq.question}</AccordionTrigger>
-                        <AccordionContent>
-                          <p className="text-gray-600">{faq.answer}</p>
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))
-                  ) : (
-                    <p className="py-4 text-center text-gray-500">
-                      No results found. Try a different search term or browse all FAQs.
-                    </p>
-                  )}
-                </Accordion>
-              </CardContent>
-            </Card>
+        
+        {/* Tabs Navigation */}
+        <div className="max-w-5xl mx-auto mb-8">
+          <Tabs defaultValue="faqs" value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="faqs" className="flex items-center justify-center">
+                <HelpCircle className="mr-2 h-4 w-4" />
+                FAQs
+              </TabsTrigger>
+              <TabsTrigger value="contact" className="flex items-center justify-center">
+                <MessageSquare className="mr-2 h-4 w-4" />
+                Contact Us
+              </TabsTrigger>
+              <TabsTrigger value="payment" className="flex items-center justify-center">
+                <Info className="mr-2 h-4 w-4" />
+                Payment Info
+              </TabsTrigger>
+            </TabsList>
             
-            {/* Bank Details Section */}
-            <Card className="mt-8">
-              <CardHeader>
-                <CardTitle>Bank Details for Worker Registration</CardTitle>
-                <CardDescription>
-                  Use these details when making your R250 registration payment via EFT or bank deposit
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Bank Name</TableHead>
-                      <TableHead>Account Number</TableHead>
-                      <TableHead>Reference</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {bankDetails.map((bank, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium">{bank.bank}</TableCell>
-                        <TableCell>{bank.accountNumber}</TableCell>
-                        <TableCell>{bank.reference}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                  <TableCaption>
-                    Remember to upload your proof of payment on the Worker Payment page
-                  </TableCaption>
-                </Table>
+            {/* FAQs Content */}
+            <TabsContent value="faqs">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <HelpCircle className="mr-2" /> 
+                    Frequently Asked Questions
+                  </CardTitle>
+                  <CardDescription>
+                    Find answers to the most common questions about our platform
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Accordion type="single" collapsible className="w-full">
+                    {filteredFaqs.length > 0 ? (
+                      filteredFaqs.map((faq, index) => (
+                        <AccordionItem key={index} value={`item-${index}`}>
+                          <AccordionTrigger>{faq.question}</AccordionTrigger>
+                          <AccordionContent>
+                            <p className="text-gray-600">{faq.answer}</p>
+                          </AccordionContent>
+                        </AccordionItem>
+                      ))
+                    ) : (
+                      <p className="py-4 text-center text-gray-500">
+                        No results found. Try a different search term or browse all FAQs.
+                      </p>
+                    )}
+                  </Accordion>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            {/* Contact Us Content */}
+            <TabsContent value="contact">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="md:col-span-2">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center">
+                        <MessageSquare className="mr-2" /> 
+                        Contact Support
+                      </CardTitle>
+                      <CardDescription>
+                        Can't find what you're looking for? Send us a message.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {messageSent ? (
+                        <div className="flex flex-col items-center justify-center py-6 text-center">
+                          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                            <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <h3 className="text-xl font-medium mb-2">Message Received!</h3>
+                          <p className="text-gray-600 mb-6">
+                            Thank you for contacting us. One of our support representatives will get back to you soon.
+                          </p>
+                          <Button onClick={resetForm}>Send Another Message</Button>
+                        </div>
+                      ) : (
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="name">Full Name</Label>
+                            <Input 
+                              id="name" 
+                              name="name" 
+                              placeholder="John Doe" 
+                              required
+                              value={contactForm.name}
+                              onChange={handleChange}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input 
+                              id="email" 
+                              name="email" 
+                              type="email" 
+                              placeholder="name@example.com" 
+                              required
+                              value={contactForm.email}
+                              onChange={handleChange}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="subject">Subject</Label>
+                            <Input 
+                              id="subject" 
+                              name="subject" 
+                              placeholder="How can we help?" 
+                              required
+                              value={contactForm.subject}
+                              onChange={handleChange}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="message">Message</Label>
+                            <Textarea 
+                              id="message" 
+                              name="message" 
+                              placeholder="Please describe your issue or question in detail..." 
+                              rows={5} 
+                              required
+                              value={contactForm.message}
+                              onChange={handleChange}
+                            />
+                          </div>
+
+                          <Button 
+                            type="submit" 
+                            className="w-full"
+                            disabled={isSubmitting}
+                          >
+                            {isSubmitting ? 'Sending...' : 'Send Message'}
+                          </Button>
+                        </form>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
                 
-                <div className="mt-6 p-4 border border-amber-200 bg-amber-50 rounded-md">
-                  <p className="text-amber-800 text-sm">
-                    <strong>Important:</strong> After making your payment, you must submit proof of payment on the 
-                    Worker Payment page. Your account will be verified and activated within 24-48 hours.
-                  </p>
+                {/* Support Contact Info */}
+                <div>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Contact Information</CardTitle>
+                      <CardDescription>Other ways to reach our support team</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        {supportContacts.map((contact, index) => (
+                          <div key={index} className="flex items-start">
+                            {contact.icon}
+                            <div>
+                              <h4 className="font-semibold">{contact.method}</h4>
+                              <p className="text-sm text-gray-600">{contact.contact}</p>
+                              <p className="text-xs text-gray-500">{contact.availability}</p>
+                            </div>
+                          </div>
+                        ))}
+                        
+                        <div className="pt-4 border-t border-gray-200">
+                          <h4 className="font-semibold mb-2">Office Hours</h4>
+                          <p className="text-sm text-gray-600">Monday to Friday: 8am - 5pm SAST</p>
+                          <p className="text-sm text-gray-600">Saturday: 9am - 1pm SAST</p>
+                          <p className="text-sm text-gray-600">Sunday & Public Holidays: Closed</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Contact Form */}
-          <div>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <MessageSquare className="mr-2" /> 
-                  Contact Support
-                </CardTitle>
-                <CardDescription>
-                  Can't find what you're looking for? Send us a message.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {messageSent ? (
-                  <div className="flex flex-col items-center justify-center py-6 text-center">
-                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                      <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
+              </div>
+            </TabsContent>
+            
+            {/* Payment Info Content */}
+            <TabsContent value="payment">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Bank Details for Worker Registration</CardTitle>
+                  <CardDescription>
+                    Use these details when making your R250 registration payment via EFT or bank deposit
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Bank Name</TableHead>
+                        <TableHead>Account Number</TableHead>
+                        <TableHead>Reference</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {bankDetails.map((bank, index) => (
+                        <TableRow key={index}>
+                          <TableCell className="font-medium">{bank.bank}</TableCell>
+                          <TableCell>{bank.accountNumber}</TableCell>
+                          <TableCell>{bank.reference}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                    <TableCaption>
+                      Remember to upload your proof of payment on the Worker Payment page
+                    </TableCaption>
+                  </Table>
+                  
+                  <div className="mt-6 space-y-6">
+                    <div className="p-4 border border-amber-200 bg-amber-50 rounded-md">
+                      <p className="text-amber-800 text-sm">
+                        <strong>Important:</strong> After making your payment, you must submit proof of payment on the 
+                        Worker Payment page. Your account will be verified and activated within 24-48 hours.
+                      </p>
                     </div>
-                    <h3 className="text-xl font-medium mb-2">Message Received!</h3>
-                    <p className="text-gray-600 mb-6">
-                      Thank you for contacting us. One of our support representatives will get back to you soon.
-                    </p>
-                    <Button onClick={resetForm}>Send Another Message</Button>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Full Name</Label>
-                      <Input 
-                        id="name" 
-                        name="name" 
-                        placeholder="John Doe" 
-                        required
-                        value={contactForm.name}
-                        onChange={handleChange}
-                      />
+                    
+                    <div>
+                      <h3 className="font-medium mb-2">Payment Process:</h3>
+                      <ol className="list-decimal pl-5 space-y-2 text-sm">
+                        <li>Complete your worker registration</li>
+                        <li>Make payment using one of the payment methods below</li>
+                        <li>Upload proof of payment on the Worker Payment page</li>
+                        <li>Wait for verification (24-48 hours)</li>
+                        <li>Receive activation confirmation</li>
+                      </ol>
                     </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input 
-                        id="email" 
-                        name="email" 
-                        type="email" 
-                        placeholder="name@example.com" 
-                        required
-                        value={contactForm.email}
-                        onChange={handleChange}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="subject">Subject</Label>
-                      <Input 
-                        id="subject" 
-                        name="subject" 
-                        placeholder="How can we help?" 
-                        required
-                        value={contactForm.subject}
-                        onChange={handleChange}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="message">Message</Label>
-                      <Textarea 
-                        id="message" 
-                        name="message" 
-                        placeholder="Please describe your issue or question in detail..." 
-                        rows={5} 
-                        required
-                        value={contactForm.message}
-                        onChange={handleChange}
-                      />
-                    </div>
-
-                    <Button 
-                      type="submit" 
-                      className="w-full"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? 'Sending...' : 'Send Message'}
-                    </Button>
-                  </form>
-                )}
-
-                {/* Additional Contact Methods */}
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <h3 className="font-medium mb-4">Other ways to reach us:</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center">
-                      <Mail className="h-5 w-5 mr-2 text-gray-600" />
-                      <span>support@example.com</span>
-                    </div>
-                    <div className="flex items-center">
-                      <MessageSquare className="h-5 w-5 mr-2 text-gray-600" />
-                      <span>Live chat available 8am-5pm SAST</span>
+                    
+                    <div>
+                      <h3 className="font-medium mb-2">Available Payment Methods:</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                        <Card className="shadow-sm">
+                          <CardHeader className="py-4 px-5">
+                            <CardTitle className="text-base">EFT Transfer</CardTitle>
+                          </CardHeader>
+                          <CardContent className="py-4 px-5">
+                            <p className="text-sm text-gray-600">Transfer to one of our bank accounts listed above</p>
+                          </CardContent>
+                        </Card>
+                        
+                        <Card className="shadow-sm">
+                          <CardHeader className="py-4 px-5">
+                            <CardTitle className="text-base">Bank Deposit</CardTitle>
+                          </CardHeader>
+                          <CardContent className="py-4 px-5">
+                            <p className="text-sm text-gray-600">Make a cash deposit at your nearest branch</p>
+                          </CardContent>
+                        </Card>
+                        
+                        <Card className="shadow-sm">
+                          <CardHeader className="py-4 px-5">
+                            <CardTitle className="text-base">PayPal</CardTitle>
+                          </CardHeader>
+                          <CardContent className="py-4 px-5">
+                            <p className="text-sm text-gray-600">Send payment to finance@example.com</p>
+                          </CardContent>
+                        </Card>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>

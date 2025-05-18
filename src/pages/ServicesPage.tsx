@@ -1,181 +1,398 @@
 
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Shield, Star, Check } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import Testimonials from '@/components/Testimonials';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/hooks/use-toast';
 
-interface Service {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  features: string[];
-  popular?: boolean;
-}
+// Define service categories
+const serviceCategories = [
+  { id: "cleaning", name: "Cleaning Services" },
+  { id: "gardening", name: "Gardening & Landscaping" },
+  { id: "home-repair", name: "Home Repairs" },
+  { id: "childcare", name: "Childcare" },
+  { id: "eldercare", name: "Elder Care" },
+  { id: "tutoring", name: "Tutoring & Education" },
+];
 
-const services: Service[] = [
+// Define sample services
+const services = [
   {
-    id: 'domestic',
-    title: 'Domestic Workers',
-    description: 'Reliable help for your home, including cleaning, cooking, and childcare.',
-    icon: <svg className="h-10 w-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>,
-    features: [
-      'Verified and background-checked workers',
-      'Flexible scheduling options',
-      'Specialized skills like cooking, cleaning, and childcare',
-      'Replacement guarantee if you're not satisfied'
-    ],
-    popular: true
+    id: "1",
+    categoryId: "cleaning",
+    title: "House Cleaning",
+    description: "Regular house cleaning services including sweeping, mopping, dusting, and bathroom cleaning.",
+    priceRange: "R150-R300 per hour",
+    image: "/placeholder.svg"
   },
   {
-    id: 'construction',
-    title: 'Construction Workers',
-    description: 'Skilled laborers for construction projects of any size.',
-    icon: <svg className="h-10 w-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>,
-    features: [
-      'Experienced workers with verified skills',
-      'Workers for short-term and long-term projects',
-      'Various specializations: masonry, carpentry, electrical',
-      'Proper safety training and certifications'
-    ]
+    id: "2",
+    categoryId: "cleaning",
+    title: "Window Cleaning",
+    description: "Professional window cleaning for homes and small businesses. Interior and exterior services available.",
+    priceRange: "R80-R150 per window",
+    image: "/placeholder.svg"
   },
   {
-    id: 'gardening',
-    title: 'Gardening & Landscaping',
-    description: 'Keep your outdoor spaces beautiful with our skilled gardeners.',
-    icon: <svg className="h-10 w-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>,
-    features: [
-      'Experienced gardeners and landscapers',
-      'Regular maintenance and one-time services',
-      'Sustainable gardening practices',
-      'Knowledge of local plants and conditions'
-    ]
+    id: "3",
+    categoryId: "gardening",
+    title: "Lawn Mowing",
+    description: "Regular lawn mowing and edging services to keep your yard looking neat and tidy.",
+    priceRange: "R200-R400 per service",
+    image: "/placeholder.svg"
   },
   {
-    id: 'security',
-    title: 'Security Services',
-    description: 'Protect your home or business with our professional security personnel.',
-    icon: <Shield className="h-10 w-10 text-primary" />,
-    features: [
-      'Trained and certified security guards',
-      'Residential and commercial security',
-      'Event security services',
-      'Background-checked personnel'
-    ]
+    id: "4",
+    categoryId: "gardening",
+    title: "Garden Maintenance",
+    description: "Comprehensive garden maintenance including pruning, weeding, and fertilizing.",
+    priceRange: "R250-R500 per visit",
+    image: "/placeholder.svg"
+  },
+  {
+    id: "5",
+    categoryId: "home-repair",
+    title: "Painting Services",
+    description: "Interior and exterior painting services with proper preparation and clean finishing.",
+    priceRange: "R1500-R3000 per room",
+    image: "/placeholder.svg"
+  },
+  {
+    id: "6",
+    categoryId: "home-repair",
+    title: "Plumbing Repairs",
+    description: "Basic plumbing repairs for leaky faucets, clogged drains, and toilet issues.",
+    priceRange: "R300-R800 per service",
+    image: "/placeholder.svg"
+  },
+  {
+    id: "7",
+    categoryId: "childcare",
+    title: "Babysitting",
+    description: "Reliable babysitting services for children of all ages. Available evenings and weekends.",
+    priceRange: "R80-R150 per hour",
+    image: "/placeholder.svg"
+  },
+  {
+    id: "8",
+    categoryId: "childcare",
+    title: "After School Care",
+    description: "After-school supervision including help with homework and safe activities.",
+    priceRange: "R1500-R3000 per month",
+    image: "/placeholder.svg"
+  },
+  {
+    id: "9",
+    categoryId: "eldercare",
+    title: "Companion Care",
+    description: "Companionship and basic assistance for seniors in their homes.",
+    priceRange: "R100-R200 per hour",
+    image: "/placeholder.svg"
+  },
+  {
+    id: "10",
+    categoryId: "eldercare",
+    title: "Medication Management",
+    description: "Help with organizing and remembering to take medications on schedule.",
+    priceRange: "R800-R1500 per week",
+    image: "/placeholder.svg"
+  },
+  {
+    id: "11",
+    categoryId: "tutoring",
+    title: "Math Tutoring",
+    description: "One-on-one tutoring for all math levels from primary school to high school.",
+    priceRange: "R150-R300 per hour",
+    image: "/placeholder.svg"
+  },
+  {
+    id: "12",
+    categoryId: "tutoring",
+    title: "Language Lessons",
+    description: "Private language lessons in English, Afrikaans, Zulu, and Xhosa.",
+    priceRange: "R200-R350 per session",
+    image: "/placeholder.svg"
   }
 ];
 
 const ServicesPage = () => {
+  const { serviceId } = useParams();
+  const [activeCategory, setActiveCategory] = useState<string>("cleaning");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [contactForm, setContactForm] = useState({
+    name: "",
+    email: "",
+    message: "",
+    serviceInterest: ""
+  });
+  const [selectedService, setSelectedService] = useState<any>(null);
+  const { toast } = useToast();
+
+  // Handle service selection or load from URL parameter
+  useEffect(() => {
+    if (serviceId) {
+      const service = services.find(s => s.id === serviceId);
+      if (service) {
+        setSelectedService(service);
+        setActiveCategory(service.categoryId);
+        setContactForm(prev => ({
+          ...prev,
+          serviceInterest: service.title
+        }));
+      }
+    }
+  }, [serviceId]);
+
+  // Filter services based on active category and search query
+  const filteredServices = services
+    .filter(service => 
+      (activeCategory === "all" || service.categoryId === activeCategory) &&
+      (searchQuery === "" || 
+       service.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+       service.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+
+  // Handle contact form changes
+  const handleContactChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setContactForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Handle contact form submission
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      console.log("Form submitted:", contactForm);
+      
+      toast({
+        title: "Inquiry Sent!",
+        description: "We've received your message and will be in touch shortly.",
+      });
+      
+      // Reset form
+      setContactForm({
+        name: "",
+        email: "",
+        message: "",
+        serviceInterest: selectedService ? selectedService.title : ""
+      });
+      
+    } catch (error) {
+      console.error("Form submission error:", error);
+      toast({
+        title: "Submission Failed",
+        description: "There was a problem sending your message. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle service selection
+  const handleServiceSelect = (service: any) => {
+    setSelectedService(service);
+    setContactForm(prev => ({
+      ...prev,
+      serviceInterest: service.title
+    }));
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <section className="bg-primary text-primary-foreground py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold mb-4">Our Services</h1>
-          <p className="max-w-2xl mx-auto text-lg opacity-90">
-            We connect employers with verified workers across various service categories, ensuring quality work and fair employment.
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-3">Our Services</h1>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Browse our wide range of services provided by verified workers. Find the help you need for your home or business.
           </p>
         </div>
-      </section>
 
-      {/* Services List */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {services.map((service) => (
-              <Card 
-                key={service.id} 
-                className={`h-full transition-all hover:shadow-lg ${service.popular ? 'border-primary' : ''}`}
-              >
-                {service.popular && (
-                  <div className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1 absolute right-4 top-4 rounded-full">
-                    Popular
-                  </div>
-                )}
+        {/* Search and Category Filter */}
+        <div className="flex flex-col md:flex-row gap-4 mb-8 max-w-4xl mx-auto">
+          <div className="flex-1">
+            <Input
+              placeholder="Search services..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <select
+              value={activeCategory}
+              onChange={e => setActiveCategory(e.target.value)}
+              className="w-full h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="all">All Categories</option>
+              {serviceCategories.map(category => (
+                <option key={category.id} value={category.id}>{category.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Services Grid */}
+          <div className={selectedService ? "lg:col-span-2" : "lg:col-span-3"}>
+            {filteredServices.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filteredServices.map((service) => (
+                  <Card key={service.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    <img 
+                      src={service.image} 
+                      alt={service.title} 
+                      className="w-full h-48 object-cover"
+                    />
+                    <CardHeader>
+                      <CardTitle>{service.title}</CardTitle>
+                      <CardDescription className="text-xs text-gray-500">
+                        {serviceCategories.find(c => c.id === service.categoryId)?.name}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-gray-600 mb-4">{service.description}</p>
+                      <p className="font-medium">Price Range: {service.priceRange}</p>
+                    </CardContent>
+                    <CardFooter>
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => handleServiceSelect(service)}
+                      >
+                        Learn More
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-500">
+                  No services found matching your search. Try different keywords or category.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Service Detail Sidebar */}
+          {selectedService && (
+            <div className="lg:col-span-1">
+              <Card>
                 <CardHeader>
-                  <div className="mb-4">{service.icon}</div>
-                  <CardTitle>{service.title}</CardTitle>
-                  <CardDescription>{service.description}</CardDescription>
+                  <CardTitle>{selectedService.title}</CardTitle>
+                  <CardDescription>
+                    {serviceCategories.find(c => c.id === selectedService.categoryId)?.name}
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {service.features.map((feature, index) => (
-                      <li key={index} className="flex items-start">
-                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button className="w-full mt-6" asChild>
-                    <Link to={service.popular ? "/register?type=employer" : `/services/${service.id}`}>
-                      {service.popular ? 'Hire Now' : 'Learn More'}
-                    </Link>
-                  </Button>
+                <CardContent className="space-y-4">
+                  <img 
+                    src={selectedService.image} 
+                    alt={selectedService.title} 
+                    className="w-full h-48 object-cover rounded-md mb-4"
+                  />
+                  
+                  <Tabs defaultValue="details">
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="details">Details</TabsTrigger>
+                      <TabsTrigger value="inquiry">Send Inquiry</TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="details" className="space-y-4">
+                      <div>
+                        <h4 className="font-medium mb-1">Description</h4>
+                        <p className="text-sm text-gray-600">{selectedService.description}</p>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium mb-1">Price Range</h4>
+                        <p className="text-sm text-gray-600">{selectedService.priceRange}</p>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium mb-1">Available Workers</h4>
+                        <p className="text-sm text-gray-600">
+                          Multiple qualified workers available for this service. 
+                          Send an inquiry to get matched with the best worker for your needs.
+                        </p>
+                      </div>
+                      
+                      <Button variant="outline" onClick={() => window.location.href = `/services`}>
+                        Back to All Services
+                      </Button>
+                    </TabsContent>
+                    
+                    <TabsContent value="inquiry">
+                      <form onSubmit={handleContactSubmit} className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="name">Your Name</Label>
+                          <Input
+                            id="name"
+                            name="name"
+                            value={contactForm.name}
+                            onChange={handleContactChange}
+                            required
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="email">Email Address</Label>
+                          <Input
+                            id="email"
+                            name="email"
+                            type="email"
+                            value={contactForm.email}
+                            onChange={handleContactChange}
+                            required
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="serviceInterest">Service Interest</Label>
+                          <Input
+                            id="serviceInterest"
+                            name="serviceInterest"
+                            value={contactForm.serviceInterest}
+                            onChange={handleContactChange}
+                            readOnly
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="message">Your Message</Label>
+                          <Textarea
+                            id="message"
+                            name="message"
+                            value={contactForm.message}
+                            onChange={handleContactChange}
+                            rows={4}
+                            placeholder="Please provide details about your service needs, preferred schedule, etc."
+                            required
+                          />
+                        </div>
+                        
+                        <Button type="submit" className="w-full">
+                          Send Inquiry
+                        </Button>
+                      </form>
+                    </TabsContent>
+                  </Tabs>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="bg-primary/10 h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-primary">1</span>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Register</h3>
-              <p className="text-gray-600">
-                Create an account as an employer to hire workers or as a worker to offer your services.
-              </p>
             </div>
-            <div className="text-center">
-              <div className="bg-primary/10 h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-primary">2</span>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Connect</h3>
-              <p className="text-gray-600">
-                Browse profiles, post job listings, or search for specific skills and connect directly.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="bg-primary/10 h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-primary">3</span>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Work</h3>
-              <p className="text-gray-600">
-                Enjoy reliable service or consistent work opportunities through our platform.
-              </p>
-            </div>
-          </div>
+          )}
         </div>
-      </section>
-
-      {/* Testimonials */}
-      <Testimonials />
-
-      {/* CTA Section */}
-      <section className="py-16 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
-          <p className="max-w-2xl mx-auto mb-8 opacity-90">
-            Join thousands of employers and workers who are transforming how work gets done.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button variant="secondary" size="lg" asChild>
-              <Link to="/register?type=employer">Hire Workers</Link>
-            </Button>
-            <Button variant="outline" size="lg" className="text-primary-foreground hover:text-primary" asChild>
-              <Link to="/register?type=worker">Become a Worker</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      </div>
     </div>
   );
 };
