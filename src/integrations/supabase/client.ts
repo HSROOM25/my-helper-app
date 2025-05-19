@@ -5,8 +5,8 @@ import type { Database } from './types';
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-const REACT_SUPABASE_PUBLISHABLE_KEY.env.REACT_SUPABASE_PUBLISHABLE_KEY
-const REACT_SUPABASE_SERVICE_ROLE_KEY env.REACT_APP_SUPABASE_ROLE_KEY;
+const supabasepulishablekey=process.env.REACT_SUPABASE_PUBLISHABLE_KEY
+const supabaseservicerolekey=process.env.REACT_APP_SUPABASE_ROLE_KEY;
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
