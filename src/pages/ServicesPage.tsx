@@ -7,11 +7,11 @@ import Logo from '@/components/Logo';
 import {
   Home,
   Heart,
-  Graduation,
+  GraduationCap,
   School,
   Book,
-  FirstAid,
-  Hygiene,
+  Stethoscope,
+  Sparkles,
 } from "lucide-react";
 import ProfileMenu from '@/components/ProfileMenu';
 import { useAuth } from '@/contexts/AuthContext';
@@ -81,7 +81,7 @@ const ServicesPage = () => {
       id: "tutoring",
       name: "Tutoring & Education",
       description: "Expert tutoring services for all ages and subjects",
-      icon: <Graduation className="h-8 w-8" />,
+      icon: <GraduationCap className="h-8 w-8" />,
       subServices: [
         {
           id: "academic",
@@ -211,13 +211,13 @@ const ServicesPage = () => {
                     <CardTitle>{subService.name}</CardTitle>
                     {subService.id === 'first-aid-cpr' && (
                       <div className="flex items-center space-x-2 text-red-600">
-                        <FirstAid className="h-5 w-5" />
+                        <Stethoscope className="h-5 w-5" />
                         <span className="text-sm font-medium">Certification Available</span>
                       </div>
                     )}
                     {subService.id === 'hygiene-cleaning' && (
                       <div className="flex items-center space-x-2 text-blue-600">
-                        <Hygiene className="h-5 w-5" />
+                        <Sparkles className="h-5 w-5" />
                         <span className="text-sm font-medium">Professional Training</span>
                       </div>
                     )}

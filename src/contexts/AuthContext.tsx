@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,19 +8,22 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
+  signUp: (email: string, password: string, userData: object) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, userData: any) => Promise<void>;
   signOut: () => Promise<void>;
   sendOTP: (email: string, phone?: string) => Promise<boolean>;
   verifyOTP: (email: string, token: string) => Promise<boolean>;
+  signInWithOTP: (email: string) => Promise<boolean>;
+  signInWithPhone: (phone: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -56,26 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [toast]);
 
-  const signIn = async (email: string, password: string) => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-      navigate('/');
-    } catch (error: any) {
-      toast({
-        title: "Login failed",
-        description: error.message,
-        variant: "destructive",
-      });
-      throw error;
-    }
-  };
-
-  const signUp = async (email: string, password: string, userData: any) => {
+  const signUp = async (email: string, password: string, userData: object) => {
     try {
       const { error } = await supabase.auth.signUp({
         email,
@@ -98,6 +81,89 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         variant: "destructive",
       });
       throw error;
+    }
+  };
+
+  const signIn = async (email: string, password: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+      navigate('/');
+    } catch (error: any) {
+      toast({
+        title: "Login failed",
+        description: error.message,
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  const signInWithOTP = async (email: string) => {
+    try {
+      setLoading(true);
+      // Use the correct type for the signInWithOtp call
+      const { data, error } = await supabase.auth.signInWithOtp({
+        email: email,
+        options: {
+          shouldCreateUser: false,
+        }
+      });
+
+      if (error) throw error;
+      
+      toast({
+        title: "OTP sent successfully",
+        description: "Please check your email for the login link",
+      });
+      
+      return true;
+    } catch (error: any) {
+      console.error('Error during OTP sign in:', error);
+      toast({
+        title: "Error sending OTP",
+        description: error.message || "Failed to send OTP. Please try again.",
+        variant: "destructive"
+      });
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signInWithPhone = async (phone: string) => {
+    try {
+      setLoading(true);
+      // Use the correct type for the signInWithOtp call
+      const { data, error } = await supabase.auth.signInWithOtp({
+        phone: phone,
+        options: {
+          shouldCreateUser: false,
+        }
+      });
+
+      if (error) throw error;
+      
+      toast({
+        title: "OTP sent successfully",
+        description: "Please check your phone for the verification code",
+      });
+      
+      return true;
+    } catch (error: any) {
+      console.error('Error during phone OTP sign in:', error);
+      toast({
+        title: "Error sending OTP",
+        description: error.message || "Failed to send OTP. Please try again.",
+        variant: "destructive"
+      });
+      return false;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -177,15 +243,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     session,
     isLoading,
-    signIn,
     signUp,
+    signIn,
     signOut,
     sendOTP,
     verifyOTP,
+    signInWithOTP,
+    signInWithPhone
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
 export function useAuth() {
   const context = useContext(AuthContext);
