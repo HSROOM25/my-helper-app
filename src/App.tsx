@@ -22,38 +22,40 @@ import CookiesPage from './pages/CookiesPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 import { AuthProvider } from "./contexts/AuthContext";
 
-// Create a new QueryClient instance
-const queryClient = new QueryClient();
-
 const App = () => {
+  // Create QueryClient inside the component rather than at the module level
+  const queryClient = new QueryClient();
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <Router>
-          <AuthProvider>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/services" element={<ServicesPage />} />
-              <Route path="/services/:serviceId" element={<ServicesPage />} />
-              <Route path="/worker-profile" element={<WorkerProfilePage />} />
-              <Route path="/employer-profile" element={<EmployerProfilePage />} />
-              <Route path="/worker-payment" element={<WorkerPaymentPage />} />
-              <Route path="/help-support" element={<HelpSupportPage />} />
-              <Route path="/terms" element={<TermsPage />} />
-              <Route path="/privacy" element={<PrivacyPage />} />
-              <Route path="/cookies" element={<CookiesPage />} />
-              <Route path="/change-password" element={<ChangePasswordPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AuthProvider>
-        </Router>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <Router>
+            <AuthProvider>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/services" element={<ServicesPage />} />
+                <Route path="/services/:serviceId" element={<ServicesPage />} />
+                <Route path="/worker-profile" element={<WorkerProfilePage />} />
+                <Route path="/employer-profile" element={<EmployerProfilePage />} />
+                <Route path="/worker-payment" element={<WorkerPaymentPage />} />
+                <Route path="/help-support" element={<HelpSupportPage />} />
+                <Route path="/terms" element={<TermsPage />} />
+                <Route path="/privacy" element={<PrivacyPage />} />
+                <Route path="/cookies" element={<CookiesPage />} />
+                <Route path="/change-password" element={<ChangePasswordPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AuthProvider>
+          </Router>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </React.StrictMode>
   );
 };
 

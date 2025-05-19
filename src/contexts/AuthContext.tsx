@@ -119,10 +119,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(true);
       // Use the correct type for the signInWithOtp call
       const { data, error } = await supabase.auth.signInWithOtp({
-        email: email,
-        options: {
-          shouldCreateUser: false,
-        }
+        email: email
       });
 
       if (error) throw error;
@@ -150,10 +147,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setLoading(true);
       const { data, error } = await supabase.auth.signInWithOtp({
-        phone: phone,
-        options: {
-          shouldCreateUser: false,
-        }
+        phone: phone
       });
 
       if (error) throw error;
