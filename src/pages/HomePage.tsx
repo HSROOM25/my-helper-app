@@ -4,11 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BellIcon, HelpCircleIcon, UserIcon, HomeIcon, MenuIcon, InfoIcon } from "lucide-react";
+import { BellIcon, HelpCircleIcon, HomeIcon, MenuIcon, InfoIcon } from "lucide-react";
 import { Link } from 'react-router-dom';
 import Logo from '@/components/Logo';
+import ProfileMenu from '@/components/ProfileMenu';
+import TestimonialsSection from '@/components/TestimonialsSection';
+import { useAuth } from '@/contexts/AuthContext';
 
 const HomePage = () => {
+  const { user } = useAuth();
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       {/* Navigation Bar */}
@@ -48,12 +53,12 @@ const HomePage = () => {
               <BellIcon size={20} />
               <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
             </Button>
-            <Button variant="ghost">
-              <UserIcon size={20} />
-            </Button>
-            <Link to="/login">
-              <Button variant="default" className="bg-blue-600 hover:bg-blue-700">Login</Button>
-            </Link>
+            <ProfileMenu />
+            {!user && (
+              <Link to="/login">
+                <Button variant="default" className="bg-blue-600 hover:bg-blue-700">Login</Button>
+              </Link>
+            )}
           </div>
         </div>
       </nav>
@@ -116,6 +121,9 @@ const HomePage = () => {
           </div>
         </div>
       </section>
+
+      {/* Testimonials Section */}
+      <TestimonialsSection />
 
       {/* Worker/Employer Tabs */}
       <section className="py-16 px-4">

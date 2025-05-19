@@ -10,8 +10,26 @@ interface EmployerProfileFormProps {
   onSubmit: (data: any) => void;
 }
 
+interface AddressType {
+  street: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  country: string;
+}
+
+interface FormDataType {
+  companyName: string;
+  industry: string;
+  description: string;
+  website: string;
+  address: AddressType;
+  contactNumber: string;
+  contactEmail: string;
+}
+
 const EmployerProfileForm: React.FC<EmployerProfileFormProps> = ({ onSubmit }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormDataType>({
     companyName: '',
     industry: '',
     description: '',
@@ -35,7 +53,7 @@ const EmployerProfileForm: React.FC<EmployerProfileFormProps> = ({ onSubmit }) =
       setFormData({
         ...formData,
         [parent]: {
-          ...formData[parent as keyof typeof formData],
+          ...(formData[parent as keyof FormDataType] as Record<string, any>),
           [child]: value,
         },
       });
@@ -53,7 +71,7 @@ const EmployerProfileForm: React.FC<EmployerProfileFormProps> = ({ onSubmit }) =
       setFormData({
         ...formData,
         [parent]: {
-          ...formData[parent as keyof typeof formData],
+          ...(formData[parent as keyof FormDataType] as Record<string, any>),
           [child]: value,
         },
       });

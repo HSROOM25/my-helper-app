@@ -16,6 +16,10 @@ import WorkerProfilePage from './pages/WorkerProfilePage';
 import WorkerPaymentPage from './pages/WorkerPaymentPage';
 import EmployerProfilePage from './pages/EmployerProfilePage';
 import HelpSupportPage from './pages/HelpSupportPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
+import CookiesPage from './pages/CookiesPage';
+import { AuthProvider } from "./contexts/AuthContext";
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
@@ -27,22 +31,24 @@ const App = () => {
         <Toaster />
         <Sonner />
         <Router>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/services/:serviceId" element={<ServicesPage />} />
-            <Route path="/worker-profile" element={<WorkerProfilePage />} />
-            <Route path="/employer-profile" element={<EmployerProfilePage />} />
-            <Route path="/worker-payment" element={<WorkerPaymentPage />} />
-            <Route path="/help-support" element={<HelpSupportPage />} />
-            <Route path="/terms" element={<NotFound />} />
-            <Route path="/privacy" element={<NotFound />} />
-            <Route path="/cookies" element={<NotFound />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/services" element={<ServicesPage />} />
+              <Route path="/services/:serviceId" element={<ServicesPage />} />
+              <Route path="/worker-profile" element={<WorkerProfilePage />} />
+              <Route path="/employer-profile" element={<EmployerProfilePage />} />
+              <Route path="/worker-payment" element={<WorkerPaymentPage />} />
+              <Route path="/help-support" element={<HelpSupportPage />} />
+              <Route path="/terms" element={<TermsPage />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
+              <Route path="/cookies" element={<CookiesPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
         </Router>
       </TooltipProvider>
     </QueryClientProvider>

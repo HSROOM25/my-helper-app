@@ -9,6 +9,7 @@ import { EyeIcon, EyeOffIcon, Shield, User, Mail } from 'lucide-react';
 import Logo from '@/components/Logo';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,31 +21,28 @@ const LoginPage = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetSubmitted, setResetSubmitted] = useState(false);
+  const [useOTP, setUseOTP] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { signIn, sendOTP, verifyOTP } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
     try {
-      // This is where we would handle login logic
-      console.log('Login attempt with:', email, password);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // For security, we now show the MFA step for all users
-      setShowMFA(true);
-      setIsSubmitting(false);
+      if (useOTP) {
+        const success = await sendOTP(email);
+        if (success) {
+          setShowMFA(true);
+        }
+      } else {
+        await signIn(email, password);
+      }
     } catch (error) {
       console.error('Login error:', error);
+    } finally {
       setIsSubmitting(false);
-      toast({
-        title: "Login failed",
-        description: "Please check your credentials and try again.",
-        variant: "destructive"
-      });
     }
   };
 
@@ -53,31 +51,11 @@ const LoginPage = () => {
     setIsSubmitting(true);
     
     try {
-      console.log('Verifying MFA code:', mfaCode);
-      
-      // Simulate verification
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // For demo purposes, accept any 6-digit code
-      if (mfaCode.length === 6 && /^\d+$/.test(mfaCode)) {
-        toast({
-          title: "Login successful!",
-          description: "Welcome back to your account.",
-        });
-        
-        // Redirect to home page
-        navigate('/');
-      } else {
-        throw new Error('Invalid verification code');
-      }
+      await verifyOTP(email, mfaCode);
     } catch (error) {
       console.error('MFA verification error:', error);
+    } finally {
       setIsSubmitting(false);
-      toast({
-        title: "Verification failed",
-        description: "Please check your verification code and try again.",
-        variant: "destructive"
-      });
     }
   };
 
@@ -86,27 +64,14 @@ const LoginPage = () => {
     setIsSubmitting(true);
     
     try {
-      // This is where we would handle password reset logic
-      console.log('Password reset requested for:', resetEmail);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setResetSubmitted(true);
-      setIsSubmitting(false);
-      
-      toast({
-        title: "Password reset link sent",
-        description: "Please check your email for instructions to reset your password.",
-      });
+      const success = await sendOTP(resetEmail);
+      if (success) {
+        setResetSubmitted(true);
+      }
     } catch (error) {
       console.error('Password reset error:', error);
+    } finally {
       setIsSubmitting(false);
-      toast({
-        title: "Password reset failed",
-        description: "Please check your email and try again.",
-        variant: "destructive"
-      });
     }
   };
 
@@ -185,11 +150,11 @@ const LoginPage = () => {
             <Logo size="large" />
           </div>
           <CardTitle className="text-2xl font-bold text-center">
-            {showMFA ? 'Two-Factor Authentication' : 'Sign in to your account'}
+            {showMFA ? 'Verification Code' : 'Sign in to your account'}
           </CardTitle>
           <CardDescription className="text-center">
             {showMFA 
-              ? 'Enter the verification code sent to your device'
+              ? 'Enter the verification code sent to your email'
               : 'Enter your email and password to access your account'}
           </CardDescription>
         </CardHeader>
@@ -217,7 +182,7 @@ const LoginPage = () => {
                   </InputOTP>
                 </div>
                 <p className="text-xs text-center text-muted-foreground mt-2">
-                  We've sent a verification code to your email or phone
+                  We've sent a verification code to your email
                 </p>
               </div>
               
@@ -227,6 +192,17 @@ const LoginPage = () => {
                 disabled={isSubmitting || mfaCode.length !== 6}
               >
                 {isSubmitting ? 'Verifying...' : 'Verify'}
+              </Button>
+              <Button 
+                type="button"
+                variant="ghost" 
+                className="w-full"
+                onClick={() => {
+                  setShowMFA(false);
+                  setMfaCode("");
+                }}
+              >
+                Back to login
               </Button>
             </form>
           ) : (
@@ -242,45 +218,62 @@ const LoginPage = () => {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-                  <button 
-                    type="button" 
-                    onClick={() => setShowForgotPassword(true)}
-                    className="text-sm text-blue-600 hover:underline"
-                  >
-                    Forgot password?
-                  </button>
+              
+              {!useOTP && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Password</Label>
+                    <button 
+                      type="button" 
+                      onClick={() => setShowForgotPassword(true)}
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <Input 
+                      id="password" 
+                      type={showPassword ? "text" : "password"} 
+                      placeholder="••••••••" 
+                      required={!useOTP}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <button 
+                      type="button" 
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeOffIcon className="h-4 w-4 text-gray-500" />
+                      ) : (
+                        <EyeIcon className="h-4 w-4 text-gray-500" />
+                      )}
+                    </button>
+                  </div>
                 </div>
-                <div className="relative">
-                  <Input 
-                    id="password" 
-                    type={showPassword ? "text" : "password"} 
-                    placeholder="••••••••" 
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <button 
-                    type="button" 
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOffIcon className="h-4 w-4 text-gray-500" />
-                    ) : (
-                      <EyeIcon className="h-4 w-4 text-gray-500" />
-                    )}
-                  </button>
-                </div>
+              )}
+              
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="use-otp"
+                  checked={useOTP}
+                  onChange={(e) => setUseOTP(e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <Label htmlFor="use-otp" className="text-sm font-normal">
+                  Sign in with a one-time code instead
+                </Label>
               </div>
+              
               <Button 
                 type="submit" 
                 className="w-full"
-                disabled={isSubmitting}
+                disabled={isSubmitting || (!useOTP && !password) || !email}
               >
-                {isSubmitting ? 'Signing in...' : 'Sign In'}
+                {isSubmitting ? 'Signing in...' : useOTP ? 'Send Code' : 'Sign In'}
               </Button>
             </form>
           )}
