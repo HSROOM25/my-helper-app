@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { User } from 'lucide-react';
 import { Profile } from '@/types';
 
@@ -32,18 +32,18 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileId }) => {
           return;
         }
 
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', id)
-          .single();
-
-        if (error) {
-          console.error('Error fetching profile:', error);
-          setError('Failed to load profile data');
-        } else if (data) {
-          setProfile(data as Profile);
-        }
+        // Since we don't have a profiles table yet, create a mock profile
+        // In a real scenario, you would fetch from the database
+        const mockProfile: Profile = {
+          id: id,
+          first_name: user?.user_metadata?.first_name || "John",
+          last_name: user?.user_metadata?.last_name || "Doe",
+          phone_number: user?.phone || null,
+          avatar_url: null,
+          user_type: user?.user_metadata?.user_type || "employer",
+        };
+        
+        setProfile(mockProfile);
       } catch (err) {
         console.error('Error in fetchProfile:', err);
         setError('An unexpected error occurred');

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -39,11 +38,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           title: "Welcome back!",
           description: "You have successfully logged in.",
         });
+        
+        // Use setTimeout to prevent auth deadlocks
+        setTimeout(() => {
+          navigate('/');
+        }, 0);
       } else if (event === 'SIGNED_OUT') {
         toast({
           title: "Signed out",
           description: "You have been logged out.",
         });
+        
+        // Use setTimeout to prevent auth deadlocks
+        setTimeout(() => {
+          navigate('/login');
+        }, 0);
       }
     });
 
@@ -57,7 +66,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [toast]);
+  }, [toast, navigate]);
 
   const signUp = async (email: string, password: string, userData: object) => {
     try {
@@ -93,7 +102,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       if (error) throw error;
-      navigate('/');
+      
+      // Navigation is handled by the auth state change listener
     } catch (error: any) {
       toast({
         title: "Login failed",
@@ -139,7 +149,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signInWithPhone = async (phone: string) => {
     try {
       setLoading(true);
-      // Use the correct type for the signInWithOtp call
       const { data, error } = await supabase.auth.signInWithOtp({
         phone: phone,
         options: {
@@ -171,7 +180,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
-      navigate('/login');
+      // Navigation is handled by the auth state change listener
     } catch (error: any) {
       toast({
         title: "Sign out failed",

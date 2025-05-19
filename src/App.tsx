@@ -19,6 +19,7 @@ import HelpSupportPage from './pages/HelpSupportPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import CookiesPage from './pages/CookiesPage';
+import ChangePasswordPage from './pages/ChangePasswordPage';
 import { AuthProvider } from "./contexts/AuthContext";
 
 // Create a new QueryClient instance
@@ -46,6 +47,7 @@ const App = () => {
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />
               <Route path="/cookies" element={<CookiesPage />} />
+              <Route path="/change-password" element={<ChangePasswordPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
