@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -30,6 +31,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
+      console.log('Auth state changed:', event, currentSession?.user?.email);
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       
@@ -58,6 +60,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Then check for existing session
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      console.log('Initial session check:', currentSession?.user?.email);
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       setIsLoading(false);
@@ -117,7 +120,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signInWithOTP = async (email: string) => {
     try {
       setLoading(true);
-      // Use the correct type for the signInWithOtp call
       const { data, error } = await supabase.auth.signInWithOtp({
         email: email
       });
@@ -186,23 +188,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const sendOTP = async (email: string, phone?: string) => {
     try {
-      let channel = 'email';
-      let target = email;
+      let options;
       
       if (phone) {
-        channel = 'sms';
-        target = phone;
+        options = {
+          phone: phone
+        };
+      } else {
+        options = {
+          email: email
+        };
       }
       
-      const { error } = await supabase.auth.signInWithOtp({
-        [channel]: target,
-      });
+      const { error } = await supabase.auth.signInWithOtp(options);
 
       if (error) throw error;
       
       toast({
         title: "Code sent successfully",
-        description: `Please check your ${channel} for the verification code.`,
+        description: `Please check your ${phone ? 'phone' : 'email'} for the verification code.`,
       });
       
       return true;

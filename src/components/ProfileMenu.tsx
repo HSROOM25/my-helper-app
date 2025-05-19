@@ -17,6 +17,8 @@ import { Badge } from "@/components/ui/badge";
 const ProfileMenu = () => {
   const { user, signOut } = useAuth();
   
+  console.log("Current user in ProfileMenu:", user);
+  
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
@@ -27,8 +29,8 @@ const ProfileMenu = () => {
                 {user && (
                   <Badge variant="outline" className="absolute -top-2 -right-2 h-4 w-4 bg-green-500 border-white z-10 rounded-full p-0" />
                 )}
-                <AvatarFallback>
-                  <User size={16} />
+                <AvatarFallback className="bg-primary text-primary-foreground">
+                  {user ? user.email?.charAt(0).toUpperCase() || <User size={16} /> : <User size={16} />}
                 </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
@@ -60,7 +62,7 @@ const ProfileMenu = () => {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer text-red-600 focus:text-red-500">
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
