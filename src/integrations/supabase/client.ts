@@ -3,9 +3,10 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const REACT_SUPABASE_URL = "https://vdmsplcvhgzxjkgcrpwb.supabase.co";
-const REACT_SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkbXNwbGN2aGd6eGprZ2NycHdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc0ODgxMTUsImV4cCI6MjA2MzA2NDExNX0.OWUut1woB4lTlebentLVXtBY7ErXigYjrAQkEEhSsP0";
-const REACT_SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkbXNwbGN2aGd6eGprZ2NycHdiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NzQ4ODExNSwiZXhwIjoyMDYzMDY0MTE1fQ.aXo-M5RYqN5GK1TYSC5l6zqARcZ8NRCGbma2mohEDak";
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+const REACT_SUPABASE_PUBLISHABLE_KEY.env.REACT_SUPABASE_PUBLISHABLE_KEY
+const REACT_SUPABASE_SERVICE_ROLE_KEY env.REACT_APP_SUPABASE_ROLE_KEY;
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
