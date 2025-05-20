@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   DropdownMenu,
@@ -17,7 +17,9 @@ import { Badge } from "@/components/ui/badge";
 const ProfileMenu = () => {
   const { user, signOut } = useAuth();
   
-  console.log("Current user in ProfileMenu:", user);
+  useEffect(() => {
+    console.log("Current user in ProfileMenu:", user);
+  }, [user]);
   
   return (
     <div className="relative">

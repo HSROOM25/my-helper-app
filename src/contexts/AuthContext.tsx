@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -29,6 +28,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
 
   useEffect(() => {
+    console.log('Setting up auth state listener');
+    
     // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
       console.log('Auth state changed:', event, currentSession?.user?.email);
@@ -120,9 +121,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signInWithOTP = async (email: string) => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithOtp({
+      console.log('Attempting to sign in with OTP for email:', email);
+      
+      const { data, error } = await supabase.auth.signInWithOtp({
         email: email
       });
+
+      console.log('OTP sign in response:', data, error);
 
       if (error) throw error;
       
@@ -148,9 +153,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signInWithPhone = async (phone: string) => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithOtp({
+      console.log('Attempting to sign in with phone OTP:', phone);
+      
+      const { data, error } = await supabase.auth.signInWithOtp({
         phone: phone
       });
+      
+      console.log('Phone OTP response:', data, error);
 
       if (error) throw error;
       
@@ -175,9 +184,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signOut = async () => {
     try {
+      console.log('Signing out user');
       await supabase.auth.signOut();
       // Navigation is handled by the auth state change listener
     } catch (error: any) {
+      console.error('Error during sign out:', error);
       toast({
         title: "Sign out failed",
         description: error.message,
@@ -188,6 +199,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const sendOTP = async (email: string, phone?: string) => {
     try {
+      setLoading(true);
+      console.log('Sending OTP to:', email || phone);
+      
       let options: any = {};
       
       if (phone) {
@@ -200,7 +214,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         };
       }
       
-      const { error } = await supabase.auth.signInWithOtp(options);
+      const { data, error } = await supabase.auth.signInWithOtp(options);
+      
+      console.log('OTP response:', data, error);
 
       if (error) throw error;
       
@@ -211,22 +227,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       return true;
     } catch (error: any) {
+      console.error('Error sending OTP:', error);
       toast({
         title: "Failed to send code",
         description: error.message,
         variant: "destructive",
       });
       return false;
+    } finally {
+      setLoading(false);
     }
   };
 
   const verifyOTP = async (email: string, token: string) => {
     try {
-      const { error } = await supabase.auth.verifyOtp({
+      console.log('Verifying OTP for:', email, 'with token:', token);
+      
+      const { data, error } = await supabase.auth.verifyOtp({
         email,
         token,
         type: 'email',
       });
+      
+      console.log('OTP verification response:', data, error);
 
       if (error) throw error;
       
@@ -238,6 +261,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       navigate('/');
       return true;
     } catch (error: any) {
+      console.error('Error verifying OTP:', error);
       toast({
         title: "Verification failed",
         description: error.message,
