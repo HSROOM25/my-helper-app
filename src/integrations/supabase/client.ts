@@ -6,9 +6,12 @@ import type { Database } from './types';
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
+const supabaseUrl = 'https://vdmsplcvhgzxjkgcrpwb.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkbXNwbGN2aGd6eGprZ2NycHdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc0ODgxMTUsImV4cCI6MjA2MzA2NDExNX0.OWUut1woB4lTlebentLVXtBY7ErXigYjrAQkEEhSsP0';
+
 export const supabase = createClient<Database>(
-  'https://vdmsplcvhgzxjkgcrpwb.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkbXNwbGN2aGd6eGprZ2NycHdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc0ODgxMTUsImV4cCI6MjA2MzA2NDExNX0.OWUut1woB4lTlebentLVXtBY7ErXigYjrAQkEEhSsP0',
+  supabaseUrl,
+  supabaseAnonKey,
   {
     auth: {
       storage: typeof window !== 'undefined' ? localStorage : undefined,

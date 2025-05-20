@@ -124,7 +124,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log('Attempting to sign in with OTP for email:', email);
       
       const { data, error } = await supabase.auth.signInWithOtp({
-        email: email
+        email: email,
+        options: {
+          // This redirects the user back to the site after clicking the email link
+          emailRedirectTo: window.location.origin,
+        }
       });
 
       console.log('OTP sign in response:', data, error);
@@ -132,16 +136,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (error) throw error;
       
       toast({
-        title: "OTP sent successfully",
-        description: "Please check your email for the login link",
+        title: "Magic link sent",
+        description: "Please check your email for the login link. Remember to check spam/junk folders.",
       });
       
       return true;
     } catch (error: any) {
       console.error('Error during OTP sign in:', error);
       toast({
-        title: "Error sending OTP",
-        description: error.message || "Failed to send OTP. Please try again.",
+        title: "Error sending magic link",
+        description: error.message || "Failed to send magic link. Please try again.",
         variant: "destructive"
       });
       return false;

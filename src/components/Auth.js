@@ -1,21 +1,37 @@
 
 import { useState } from 'react'
 import { supabase } from '@/integrations/supabase/client'
+import { useToast } from "@/hooks/use-toast"
 
 export default function Auth() {
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState('')
+  const { toast } = useToast()
 
   const handleLogin = async (e) => {
     e.preventDefault()
 
     try {
       setLoading(true)
-      const { error } = await supabase.auth.signInWithOtp({ email })
+      const { error } = await supabase.auth.signInWithOtp({ 
+        email,
+        options: {
+          emailRedirectTo: window.location.origin,
+        }
+      })
+      
       if (error) throw error
-      alert('Check your email for the login link!')
+      
+      toast({
+        title: "Check your email",
+        description: "We sent you a login link. Be sure to check your spam folder too.",
+      })
     } catch (error) {
-      alert(error.error_description || error.message)
+      toast({
+        title: "Error",
+        description: error.error_description || error.message,
+        variant: "destructive",
+      })
     } finally {
       setLoading(false)
     }
@@ -24,7 +40,7 @@ export default function Auth() {
   return (
     <div className="container mx-auto text-center w-72">
       <div className="col-6 form-widget" aria-live="polite">
-        <h1 className="header text-3xl py-3 text-gray-600">Login in</h1>
+        <h1 className="header text-3xl py-3 text-gray-600">Log in</h1>
         <p className="text-xs text-gray-500 pb-3">Sign in via magic link with your email below</p>
         {loading ? (
           'Sending magic link...'
