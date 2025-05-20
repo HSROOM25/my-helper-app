@@ -5,15 +5,19 @@ import type { Database } from './types';
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-const supabasepulishablekey=process.env.REACT_SUPABASE_PUBLISHABLE_KEY
-const supabaseservicerolekey=process.env.REACT_APP_SUPABASE_ROLE_KEY;
+const supabaseServiceRoleKey = process.env.REACT_APP_SUPABASE_SERVICE_ROLE_KEY;
+
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL,SUPABASE_ANON_KEY,SUPABASE_PUBLISHABLE_KEY, {
-  auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
+export const supabase = createClient<Database>(
+  'https://vdmsplcvhgzxjkgcrpwb.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkbXNwbGN2aGd6eGprZ2NycHdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc0ODgxMTUsImV4cCI6MjA2MzA2NDExNX0.OWUut1woB4lTlebentLVXtBY7ErXigYjrAQkEEhSsP0',
+  {
+    auth: {
+      storage: localStorage,
+      persistSession: true,
+      autoRefreshToken: true,
+    }
   }
-});
+);

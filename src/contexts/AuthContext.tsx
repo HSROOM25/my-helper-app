@@ -120,7 +120,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signInWithOTP = async (email: string) => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.auth.signInWithOtp({
+      const { error } = await supabase.auth.signInWithOtp({
         email: email
       });
 
@@ -148,7 +148,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signInWithPhone = async (phone: string) => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.auth.signInWithOtp({
+      const { error } = await supabase.auth.signInWithOtp({
         phone: phone
       });
 
@@ -188,7 +188,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const sendOTP = async (email: string, phone?: string) => {
     try {
-      let options;
+      let options: any = {};
       
       if (phone) {
         options = {
@@ -225,7 +225,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const { error } = await supabase.auth.verifyOtp({
         email,
         token,
-        type: 'magiclink',
+        type: 'email',
       });
 
       if (error) throw error;

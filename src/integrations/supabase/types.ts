@@ -18,8 +18,8 @@ export type Database = {
           id: string
           name: string
           number: string
+          password_hash: string
           surname: string
-          user_password: string
           username: string
         }
         Insert: {
@@ -30,8 +30,8 @@ export type Database = {
           id?: string
           name: string
           number: string
+          password_hash: string
           surname: string
-          user_password: string
           username: string
         }
         Update: {
@@ -42,8 +42,8 @@ export type Database = {
           id?: string
           name?: string
           number?: string
+          password_hash?: string
           surname?: string
-          user_password?: string
           username?: string
         }
         Relationships: []

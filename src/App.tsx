@@ -20,6 +20,7 @@ import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import CookiesPage from './pages/CookiesPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
+import ProcessAndFeesPage from './pages/ProcessAndFeesPage';
 import { AuthProvider } from "./contexts/AuthContext";
 
 const App = () => {
@@ -49,6 +50,7 @@ const App = () => {
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/cookies" element={<CookiesPage />} />
                 <Route path="/change-password" element={<ChangePasswordPage />} />
+                <Route path="/process-and-fees" element={<ProcessAndFeesPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AuthProvider>
