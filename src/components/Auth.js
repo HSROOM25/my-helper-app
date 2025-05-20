@@ -13,6 +13,15 @@ export default function Auth() {
 
     try {
       setLoading(true)
+      
+      // First, check if the user exists
+      const { data: { users }, error: userError } = await supabase.auth.admin.listUsers({
+        filter: {
+          email: email
+        }
+      }).catch(() => ({ data: { users: [] }, error: null }));
+
+      // Try to sign in with OTP
       const { error } = await supabase.auth.signInWithOtp({ 
         email,
         options: {
@@ -22,16 +31,39 @@ export default function Auth() {
       
       if (error) throw error
       
-      toast({
-        title: "Check your email",
-        description: "We sent you a login link. Be sure to check your spam folder too.",
-      })
+      // Show appropriate toast message
+      if (users && users.length > 0) {
+        toast({
+          title: "Check your email",
+          description: "We sent you a login link. Be sure to check your spam folder too. (Note: There might be issues with the email provider, please check Supabase settings)",
+          duration: 6000,
+        })
+      } else {
+        toast({
+          title: "Check your email",
+          description: "We sent you a registration link. Be sure to check your spam folder too. (Note: There might be issues with the email provider, please check Supabase settings)",
+          duration: 6000,
+        })
+      }
+      
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error.error_description || error.message,
-        variant: "destructive",
-      })
+      console.error("Authentication error:", error);
+      
+      if (error.message?.includes("domain with your API key is not verified")) {
+        toast({
+          title: "Email Verification Issue",
+          description: "There's a problem with the email provider configuration. Please contact the administrator.",
+          variant: "destructive",
+          duration: 6000,
+        })
+      } else {
+        toast({
+          title: "Error",
+          description: error.error_description || error.message,
+          variant: "destructive",
+          duration: 6000,
+        })
+      }
     } finally {
       setLoading(false)
     }
@@ -59,6 +91,13 @@ export default function Auth() {
               </button>
           </form>
         )}
+        
+        <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
+          <p className="text-xs text-amber-700">
+            <strong>Note:</strong> There appears to be an issue with the email provider configuration in Supabase. 
+            If you don't receive the email, please check Supabase settings or contact the administrator.
+          </p>
+        </div>
       </div>
     </div>
   )

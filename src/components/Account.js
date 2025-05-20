@@ -13,41 +13,50 @@ const Account = ({ session }) => {
     const { toast } = useToast()
 
     useEffect(() => {
-        getProfile()
+        if (session) {
+            getProfile()
+        }
     }, [session])
 
     const getProfile = async () => {
         try {
             setLoading(true)
             const user = session?.user
-
+            
             if (!user) {
-                throw new Error("No user on the session")
+                console.error("No user on the session!")
+                return
             }
 
-            // First check if profiles table exists
-            const { error: tableCheckError } = await supabase
-                .from('profiles')
-                .select('*')
-                .limit(1)
-                .single()
+            console.log("Getting profile for user:", user.id)
 
-            // If table exists, get user profile
-            if (!tableCheckError || tableCheckError.code !== "PGRST116") {
-                let { data, error } = await supabase
+            // First check if user has metadata
+            if (user.user_metadata) {
+                setUsername(user.user_metadata.username || user.user_metadata.name || user.email)
+                setWebsite(user.user_metadata.website || "")
+                setAvatarUrl(user.user_metadata.avatar_url || "")
+                console.log("Using user metadata:", user.user_metadata)
+            }
+
+            // Try to get from profiles table if it exists
+            try {
+                const { data, error } = await supabase
                     .from('profiles')
                     .select(`username, website, avatar_url`)
                     .eq('id', user.id)
                     .single()
 
-                if (data) {
-                    setUsername(data.username)
-                    setWebsite(data.website)
-                    setAvatarUrl(data.avatar_url)
+                if (data && !error) {
+                    console.log("Found profile in profiles table:", data)
+                    setUsername(data.username || username)
+                    setWebsite(data.website || website)
+                    setAvatarUrl(data.avatar_url || avatar_url)
+                } else if (error && error.code !== "PGRST116") {
+                    console.log("Error fetching profile:", error)
                 }
-            } else {
-                // If table doesn't exist, use user metadata
-                setUsername(user.user_metadata?.username || user.email)
+            } catch (err) {
+                console.log("Error accessing profiles table:", err)
+                // Table probably doesn't exist, that's okay
             }
         } catch (error) {
             console.error("Error loading user profile:", error)
@@ -72,48 +81,44 @@ const Account = ({ session }) => {
                 throw new Error("No user on the session")
             }
 
-            const updates = {
-                id: user.id,
-                username,
-                website,
-                avatar_url,
-                updated_at: new Date()
+            // First update user metadata
+            const { error: metadataError } = await supabase.auth.updateUser({
+                data: { username, website }
+            })
+
+            if (metadataError) {
+                console.error("Error updating user metadata:", metadataError)
+            } else {
+                console.log("Updated user metadata")
             }
 
-            // First check if profiles table exists
-            const { error: tableCheckError } = await supabase
-                .from('profiles')
-                .select('*')
-                .limit(1)
-                .single()
+            // Try to update profiles table if it exists
+            try {
+                const updates = {
+                    id: user.id,
+                    username,
+                    website,
+                    avatar_url,
+                    updated_at: new Date()
+                }
 
-            if (!tableCheckError || tableCheckError.code !== "PGRST116") {
                 let { error } = await supabase.from("profiles")
                     .upsert(updates, { returning: 'minimal' })
 
                 if (error) {
-                    throw error
+                    console.error("Error updating profiles table:", error)
+                } else {
+                    console.log("Updated profiles table")
                 }
-
-                toast({
-                    title: "Success",
-                    description: "Profile updated successfully!"
-                })
-            } else {
-                // If profiles table doesn't exist, update user metadata
-                const { error } = await supabase.auth.updateUser({
-                    data: { username, website }
-                })
-
-                if (error) {
-                    throw error
-                }
-
-                toast({
-                    title: "Success",
-                    description: "Profile updated successfully!"
-                })
+            } catch (err) {
+                console.log("Error accessing profiles table:", err)
+                // Table probably doesn't exist, that's okay
             }
+
+            toast({
+                title: "Success",
+                description: "Profile updated successfully!"
+            })
         } catch (error) {
             toast({
                 title: "Error updating profile",
@@ -125,10 +130,26 @@ const Account = ({ session }) => {
         }
     }
 
+    const signOut = async () => {
+        try {
+            await supabase.auth.signOut()
+            toast({
+                title: "Signed out",
+                description: "You have been successfully signed out."
+            })
+        } catch (error) {
+            toast({
+                title: "Error signing out",
+                description: error.message,
+                variant: "destructive"
+            })
+        }
+    }
+
     return (
         <div aria-live="polite" className='container mx-auto'>
             {loading ? (
-                'Loading profile...'
+                <div className="text-center p-4">Loading profile...</div>
             ) : (
                 <form onSubmit={updateProfile} className="form-widget">
                     <div className="flex justify-center mb-4">
@@ -143,7 +164,9 @@ const Account = ({ session }) => {
                         </Avatar>
                     </div>
                     <div className="text-center mb-4">
+                        <p className="text-lg font-semibold">User ID: {session.user.id}</p>
                         <p>Email: {session.user.email}</p>
+                        <p className="text-sm text-gray-500">Last Sign In: {new Date(session.user.last_sign_in_at || session.created_at).toLocaleString()}</p>
                     </div>
                     <div className="container mx-auto w-72 py-4">
                         <input type="text"
@@ -166,7 +189,7 @@ const Account = ({ session }) => {
                         />
                     </div>
                     <div className='text-center'>
-                        <button className="w-44 h-11 rounded-full text-gray-50 bg-indigo-600 hover:bg-indigo-700" disabled={loading}>
+                        <button className="my-3 w-44 h-11 rounded-full text-gray-50 bg-indigo-600 hover:bg-indigo-700" disabled={loading}>
                             Update Profile
                         </button>
                     </div>
@@ -174,7 +197,7 @@ const Account = ({ session }) => {
                         <button
                             type="button"
                             className="w-44 h-11 rounded-full text-gray-50 bg-red-600 hover:bg-red-700"
-                            onClick={() => supabase.auth.signOut()}
+                            onClick={signOut}
                         >
                             Sign Out
                         </button>

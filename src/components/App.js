@@ -6,23 +6,35 @@ import Auth from './components/Auth';
 import Account from './components/Account';
 
 function App() {
-
   const [session, setSession] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-    })
-
-    // Set up auth state listener
+    // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
       console.log("Auth state changed:", _event, session)
+      setSession(session)
     })
 
-    return () => subscription.unsubscribe()
+    // Then check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("Initial session check:", session)
+      setSession(session)
+      setLoading(false)
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [])
+
+  if (loading) {
+    return (
+      <div className="container mx-auto flex items-center justify-center h-screen">
+        <p>Loading...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto">

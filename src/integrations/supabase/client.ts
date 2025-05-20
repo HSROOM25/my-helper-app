@@ -21,3 +21,27 @@ export const supabase = createClient<Database>(
     }
   }
 );
+
+// Helper function to check and retrieve current session
+export const getCurrentSession = async () => {
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    return data?.session;
+  } catch (error) {
+    console.error("Error getting current session:", error);
+    return null;
+  }
+};
+
+// Helper function to get current user
+export const getCurrentUser = async () => {
+  try {
+    const { data, error } = await supabase.auth.getUser();
+    if (error) throw error;
+    return data?.user;
+  } catch (error) {
+    console.error("Error getting current user:", error);
+    return null;
+  }
+};
