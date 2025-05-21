@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar-shadcn";
 import { useAuth } from "@/contexts/AuthContext";
-import { User, Settings, LogOut, UserPlus, LogIn, KeyRound } from "lucide-react";
+import { User, Settings, LogOut, KeyRound } from "lucide-react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Badge } from "@/components/ui/badge";
 
@@ -27,14 +27,19 @@ const ProfileMenu = () => {
         <HoverCard openDelay={300}>
           <HoverCardTrigger asChild>
             <DropdownMenuTrigger asChild>
-              <Avatar className="h-8 w-8 cursor-pointer relative">
-                {user && (
-                  <Badge variant="outline" className="absolute -top-2 -right-2 h-4 w-4 bg-green-500 border-white z-10 rounded-full p-0" />
-                )}
-                <AvatarFallback className="bg-primary text-primary-foreground">
-                  {user ? user.email?.charAt(0).toUpperCase() || <User size={16} /> : <User size={16} />}
-                </AvatarFallback>
-              </Avatar>
+              <div className="flex items-center space-x-1 cursor-pointer">
+                <Avatar className="h-8 w-8 relative">
+                  {user && (
+                    <Badge variant="outline" className="absolute -top-2 -right-2 h-4 w-4 bg-green-500 border-white z-10 rounded-full p-0" />
+                  )}
+                  <AvatarFallback className="bg-primary text-primary-foreground">
+                    {user ? user.email?.charAt(0).toUpperCase() || <User size={16} /> : <User size={16} />}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-sm font-medium">
+                  {user ? user.email?.split('@')[0] : 'Account'}
+                </span>
+              </div>
             </DropdownMenuTrigger>
           </HoverCardTrigger>
           <HoverCardContent className="w-80">
@@ -99,18 +104,10 @@ const ProfileMenu = () => {
             </>
           ) : (
             <>
-              <DropdownMenuItem asChild>
-                <Link to="/login" className="cursor-pointer flex w-full">
-                  <LogIn className="mr-2 h-4 w-4" />
-                  <span>Sign In</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/register" className="cursor-pointer flex w-full">
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  <span>Create Account</span>
-                </Link>
-              </DropdownMenuItem>
+              <div className="text-center py-2 px-1">
+                <p className="text-sm font-medium">Not signed in</p>
+                <p className="text-xs text-muted-foreground">Please login to access all features</p>
+              </div>
             </>
           )}
         </DropdownMenuContent>
