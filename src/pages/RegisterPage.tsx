@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +9,7 @@ import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import Logo from '@/components/Logo';
 import { useToast } from "@/hooks/use-toast";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { supabase } from '@/integrations/supabase/client';
 
 const RegisterPage = () => {
   const { toast } = useToast();
@@ -78,29 +78,54 @@ const RegisterPage = () => {
     }
     
     setIsSubmitting(true);
-    console.log('Validation successful, sending OTP...');
+    console.log('Validation successful, creating account...');
     
     try {
-      // Here we would call Africa's Talk API to send OTP
-      // Simulating API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setIsSubmitting(false);
-      setShowOTP(true);
-      
-      toast({
-        title: `OTP Sent!`,
-        description: `Please check your ${verificationMethod === 'email' ? 'email' : 'phone'} for the verification code.`,
+      // Create the user account with Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            phone: formData.phoneNumber,
+            account_type: accountType,
+          }
+        }
       });
       
-      console.log(`OTP sent to user's ${verificationMethod}`);
-    } catch (error) {
-      console.error('OTP sending error:', error);
+      if (error) throw error;
+      
+      console.log('Account created successfully:', data);
+      
+      // Automatically sign in the user
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+      
+      if (signInError) throw signInError;
+      
+      toast({
+        title: "Account created successfully!",
+        description: "You have been automatically logged in.",
+      });
+      
+      // Redirect based on account type
+      if (accountType === 'worker') {
+        navigate('/worker-profile');
+      } else {
+        navigate('/employer-profile');
+      }
+      
+    } catch (error: any) {
+      console.error('Registration error:', error);
       setIsSubmitting(false);
       
       toast({
-        title: "Failed to send OTP",
-        description: "Please check your contact information and try again.",
+        title: "Registration failed",
+        description: error.message || "An error occurred during registration.",
         variant: "destructive",
       });
     }

@@ -51,13 +51,17 @@ const LoginPage = () => {
     
     try {
       if (loginMethod === 'password') {
+        console.log("Attempting to sign in with email and password:", formData.email);
         // Email + Password login
         await signIn(formData.email, formData.password);
+        console.log("Sign in successful");
         // If login is successful, the auth context will handle the redirect
       } else {
+        console.log("Attempting to sign in with OTP for email:", formData.email);
         // Magic link login
         const success = await signInWithOTP(formData.email);
         if (success) {
+          console.log("OTP sent successfully");
           // Success message is handled by the auth context
         }
       }
