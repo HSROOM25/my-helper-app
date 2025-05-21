@@ -63,8 +63,9 @@ const NavBar = () => {
             </div>
           ) : (
             <div className="flex items-center space-x-2">
-              <div className="hidden md:block text-sm font-medium text-green-600">
-                Logged in
+              <div className="flex items-center bg-green-100 px-3 py-1 rounded-full text-sm font-medium text-green-700 border border-green-200">
+                <div className="h-2 w-2 bg-green-500 rounded-full mr-2"></div>
+                <span>Logged in</span>
               </div>
               <ProfileMenu />
             </div>

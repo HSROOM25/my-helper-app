@@ -13,13 +13,32 @@ import { useAuth } from "@/contexts/AuthContext";
 import { User, Settings, LogOut, KeyRound } from "lucide-react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 const ProfileMenu = () => {
   const { user, signOut } = useAuth();
+  const { toast } = useToast();
   
   useEffect(() => {
     console.log("Current user in ProfileMenu:", user);
   }, [user]);
+  
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Logged out successfully",
+        description: "You have been signed out of your account",
+      });
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast({
+        title: "Error signing out",
+        description: "There was a problem signing out. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
   
   return (
     <div className="relative">
@@ -79,7 +98,7 @@ const ProfileMenu = () => {
         <DropdownMenuContent align="end" className="w-56">
           {user ? (
             <>
-              <div className="px-2 py-1.5">
+              <div className="px-2 py-1.5 bg-blue-50">
                 <p className="text-sm font-medium">{user.email}</p>
                 <p className="text-xs text-muted-foreground truncate">ID: {user.id}</p>
                 <Badge variant="outline" className="mt-1 bg-green-100 text-green-800 text-xs">Active</Badge>
@@ -104,26 +123,26 @@ const ProfileMenu = () => {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer text-red-600 focus:text-red-500">
+              <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600 focus:text-red-500">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>
               </DropdownMenuItem>
             </>
           ) : (
             <>
-              <div className="text-center py-2 px-1">
+              <div className="text-center py-2 px-1 bg-gray-50">
                 <p className="text-sm font-medium">Not signed in</p>
                 <p className="text-xs text-muted-foreground">Please login to access all features</p>
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to="/login" className="cursor-pointer w-full">
+                <Link to="/login" className="cursor-pointer flex w-full">
                   <User className="mr-2 h-4 w-4" />
                   <span>Log in</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/register" className="cursor-pointer w-full">
+                <Link to="/register" className="cursor-pointer flex w-full">
                   <User className="mr-2 h-4 w-4" />
                   <span>Sign up</span>
                 </Link>
