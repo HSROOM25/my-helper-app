@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { BellIcon, HomeIcon, MenuIcon, InfoIcon, HelpCircleIcon } from "lucide-react";
+import { BellIcon, HomeIcon, MenuIcon, InfoIcon, HelpCircleIcon, UserIcon } from "lucide-react";
 import Logo from '@/components/Logo';
 import ProfileMenu from '@/components/ProfileMenu';
 import { useAuth } from '@/contexts/AuthContext';
@@ -45,10 +45,12 @@ const NavBar = () => {
         </div>
         
         <div className="flex items-center space-x-3">
-          <Button variant="ghost" className="relative">
-            <BellIcon size={20} />
-            <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
-          </Button>
+          {user && (
+            <Button variant="ghost" className="relative">
+              <BellIcon size={20} />
+              <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
+            </Button>
+          )}
           
           {!user ? (
             <div className="flex items-center space-x-2">
@@ -60,7 +62,12 @@ const NavBar = () => {
               </Link>
             </div>
           ) : (
-            <ProfileMenu />
+            <div className="flex items-center space-x-2">
+              <div className="hidden md:block text-sm font-medium text-green-600">
+                Logged in
+              </div>
+              <ProfileMenu />
+            </div>
           )}
         </div>
       </div>

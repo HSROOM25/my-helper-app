@@ -27,7 +27,7 @@ const ProfileMenu = () => {
         <HoverCard openDelay={300}>
           <HoverCardTrigger asChild>
             <DropdownMenuTrigger asChild>
-              <div className="flex items-center space-x-1 cursor-pointer">
+              <div className="flex items-center space-x-1 cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors px-3 py-2 rounded-md border border-blue-200">
                 <Avatar className="h-8 w-8 relative">
                   {user && (
                     <Badge variant="outline" className="absolute -top-2 -right-2 h-4 w-4 bg-green-500 border-white z-10 rounded-full p-0" />
@@ -36,9 +36,16 @@ const ProfileMenu = () => {
                     {user ? user.email?.charAt(0).toUpperCase() || <User size={16} /> : <User size={16} />}
                   </AvatarFallback>
                 </Avatar>
-                <span className="text-sm font-medium">
-                  {user ? user.email?.split('@')[0] : 'Account'}
-                </span>
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-medium">
+                    {user ? 'My Account' : 'Account'}
+                  </span>
+                  {user && (
+                    <span className="text-xs text-gray-500 truncate max-w-[100px]">
+                      {user.email?.split('@')[0]}
+                    </span>
+                  )}
+                </div>
               </div>
             </DropdownMenuTrigger>
           </HoverCardTrigger>
@@ -108,6 +115,19 @@ const ProfileMenu = () => {
                 <p className="text-sm font-medium">Not signed in</p>
                 <p className="text-xs text-muted-foreground">Please login to access all features</p>
               </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/login" className="cursor-pointer w-full">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Log in</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/register" className="cursor-pointer w-full">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Sign up</span>
+                </Link>
+              </DropdownMenuItem>
             </>
           )}
         </DropdownMenuContent>
