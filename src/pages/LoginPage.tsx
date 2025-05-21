@@ -7,11 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from 'react-router-dom';
-import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import { EyeIcon, EyeOffIcon, AlertCircle } from 'lucide-react';
 import Logo from '@/components/Logo';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const LoginPage = () => {
   const { toast } = useToast();
@@ -20,6 +20,7 @@ const LoginPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginMethod, setLoginMethod] = useState<'email' | 'password'>('email');
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const [formData, setFormData] = useState({
     email: '',
@@ -39,30 +40,36 @@ const LoginPage = () => {
       ...prev,
       [name]: value
     }));
+    // Clear error when user starts typing again
+    setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
     
     try {
       if (loginMethod === 'password') {
         // Email + Password login
         await signIn(formData.email, formData.password);
+        // If login is successful, the auth context will handle the redirect
       } else {
         // Magic link login
         const success = await signInWithOTP(formData.email);
         if (success) {
-          // Stay on page to inform user to check their email
+          // Success message is handled by the auth context
         }
       }
     } catch (error: any) {
       console.error("Login error:", error);
-      toast({
-        title: "Login failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      
+      // Handle specific error messages
+      if (error.message?.includes("Invalid login credentials")) {
+        setError("Invalid email or password. Please try again.");
+      } else {
+        setError(error.message || "An error occurred during login. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -84,7 +91,10 @@ const LoginPage = () => {
           <Tabs 
             defaultValue="email" 
             value={loginMethod} 
-            onValueChange={(value) => setLoginMethod(value as 'email' | 'password')}
+            onValueChange={(value) => {
+              setLoginMethod(value as 'email' | 'password');
+              setError(null);
+            }}
             className="w-full"
           >
             <TabsList className="grid w-full grid-cols-2">
@@ -93,6 +103,13 @@ const LoginPage = () => {
             </TabsList>
             
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+              {error && (
+                <Alert variant="destructive" className="border-red-500">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input 
@@ -158,13 +175,21 @@ const LoginPage = () => {
             </form>
           </Tabs>
         </CardContent>
-        <CardFooter className="flex justify-center">
+        <CardFooter className="flex flex-col gap-4">
           <p className="text-sm text-gray-600">
             Don't have an account?{" "}
             <Link to="/register" className="text-blue-600 hover:underline">
               Sign up
             </Link>
           </p>
+          <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-md border border-gray-200">
+            <p className="font-medium mb-1">Having trouble logging in?</p>
+            <ul className="list-disc list-inside">
+              <li>Make sure your email and password are correct</li>
+              <li>Try the magic link option if you're unsure about your password</li>
+              <li>If you're new, register for an account first</li>
+            </ul>
+          </div>
         </CardFooter>
       </Card>
     </div>
