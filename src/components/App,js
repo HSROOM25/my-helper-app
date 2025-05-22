@@ -1,7 +1,31 @@
-import ProfileDetailPage from './pages/ProfileDetailPage'; // create this!
+import { useEffect, useState } from 'react';
+import './App.css';
+import { supabase } from '@/integrations/supabase/client';
+import Auth from './components/Auth';
+import Account from './components/Account';
+
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
+
+import HomePage from './pages/HomePage';
+import ProfilesPage from './pages/ProfilesPage';
+import ProfileDetailPage from './pages/ProfileDetailPage';  // Import added here
+import ServicesPage from './pages/ServicesPage';
+import RegisterPage from './pages/RegisterPage';
 
 function App() {
-  // ...existing code
+  const [session, setSession] = useState(null);
+
+  useEffect(() => {
+    setSession(supabase.auth.session());
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+  }, []);
 
   return (
     <Router>
@@ -39,3 +63,5 @@ function App() {
     </Router>
   );
 }
+
+export default App;
