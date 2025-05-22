@@ -1,20 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabaseClient'; // Adjust path if needed
+import { supabase } from '@/integrations/supabase/client'; // Adjust path if needed
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
-interface Worker {
-  id: string;
-  full_name: string;
-  city: string;
-  experience: string;
-  skills: string;
-  bio?: string;
-}
-
 const ProfilesPage = () => {
-  const [workers, setWorkers] = useState<Worker[]>([]);
+  const [workers, setWorkers] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,7 +32,7 @@ const ProfilesPage = () => {
       <h1 className="text-3xl font-bold mb-8 text-center">Available Helpers</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {workers.map(worker => (
+        {workers.map((worker) => (
           <Card key={worker.id}>
             <CardHeader>
               <CardTitle>{worker.full_name}</CardTitle>
