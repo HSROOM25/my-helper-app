@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabaseClient'; // adjust path if needed
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { supabase } from '@/lib/supabaseClient';
 
 const ProfileDetailPage = () => {
-  const { id } = useParams();   // get worker id from URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const [worker, setWorker] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchWorker = async () => {
-      setLoading(true);
       const { data, error } = await supabase
         .from('worker_profiles')
         .select('*')
@@ -21,37 +17,28 @@ const ProfileDetailPage = () => {
 
       if (error) {
         console.error('Error fetching worker:', error.message);
-        setWorker(null);
+        // Optionally navigate away or show error
+        navigate('/profiles');
       } else {
         setWorker(data);
       }
-      setLoading(false);
     };
 
     fetchWorker();
-  }, [id]);
+  }, [id, navigate]);
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
-
-  if (!worker) return <p className="text-center mt-10">Worker not found.</p>;
+  if (!worker) return <p>Loading profile...</p>;
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-xl">
-      <Button onClick={() => navigate(-1)} className="mb-6">
-        ← Back to Helpers
-      </Button>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{worker.full_name}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p><strong>City:</strong> {worker.city}</p>
-          <p><strong>Experience:</strong> {worker.experience}</p>
-          <p><strong>Skills:</strong> {worker.skills}</p>
-          {worker.bio && <p className="mt-4">{worker.bio}</p>}
-        </CardContent>
-      </Card>
+    <div className="container mx-auto px-4 py-12">
+      <h1 className="text-3xl font-bold mb-4">{worker.full_name}</h1>
+      <p><strong>City:</strong> {worker.city}</p>
+      <p><strong>Experience:</strong> {worker.experience}</p>
+      <p><strong>Skills:</strong> {worker.skills}</p>
+      <p className="mt-4">{worker.bio}</p>
+      <button onClick={() => navigate('/profiles')} className="mt-6 btn btn-secondary">
+        Back to Helpers
+      </button>
     </div>
   );
 };
