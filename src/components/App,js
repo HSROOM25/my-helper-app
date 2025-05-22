@@ -1,70 +1,41 @@
-import { useEffect, useState } from 'react';
-import './App.css';
-import { supabase } from '@/integrations/supabase/client';
-import Auth from './components/Auth';
-import Account from './components/Account';
-
-// Import react-router components
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from 'react-router-dom';
-
-// Import your HomePage component
-import HomePage from './pages/HomePage';  // Adjust path as needed
-import ProfilesPage from './pages/ProfilesPage'; // example target page for /profiles
-import ServicesPage from './pages/ServicesPage';
-import RegisterPage from './pages/RegisterPage';
+import ProfileDetailPage from './pages/ProfileDetailPage'; // create this!
 
 function App() {
-  const [session, setSession] = useState(null);
-
-  useEffect(() => {
-    setSession(supabase.auth.session());
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-  }, []);
+  // ...existing code
 
   return (
     <Router>
       <div className="container mx-auto">
         <Routes>
-          {/* Public HomePage */}
           <Route path="/" element={<HomePage />} />
 
-          {/* Example Profiles page */}
           <Route
             path="/profiles"
             element={session ? <ProfilesPage /> : <Navigate to="/" replace />}
           />
 
-          {/* Services page - example */}
+          <Route
+            path="/profile/:id"
+            element={session ? <ProfileDetailPage /> : <Navigate to="/" replace />}
+          />
+
           <Route
             path="/services"
             element={session ? <ServicesPage /> : <Navigate to="/register" replace />}
           />
 
-          {/* Register page */}
           <Route path="/register" element={<RegisterPage />} />
 
-          {/* Auth/Account flow fallback - optional */}
           <Route
             path="/account"
             element={session ? <Account key={session.user.id} session={session} /> : <Navigate to="/register" replace />}
           />
 
-          {/* Auth page fallback if no session */}
           {!session && <Route path="/auth" element={<Auth />} />}
-          
-          {/* Catch all unmatched routes */}
+
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </Router>
   );
 }
-
-export default App;
