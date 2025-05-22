@@ -22,6 +22,7 @@ import CookiesPage from './pages/CookiesPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 import ProcessAndFeesPage from './pages/ProcessAndFeesPage';
 import { AuthProvider } from "./contexts/AuthContext";
+import ProfilesPage from '@/pages/ProfilesPage';
 
 const App = () => {
   // Create QueryClient inside the component rather than at the module level
@@ -49,6 +50,7 @@ const App = () => {
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/cookies" element={<CookiesPage />} />
+                <Route path="/profiles" element={<ProfilesPage />} />
                 <Route path="/change-password" element={<ChangePasswordPage />} />
                 <Route path="/process-and-fees" element={<ProcessAndFeesPage />} />
                 <Route path="*" element={<NotFound />} />
