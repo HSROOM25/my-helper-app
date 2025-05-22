@@ -1,45 +1,66 @@
-
 import { useEffect, useState } from 'react';
 import './App.css';
-import { supabase } from '@/integrations/supabase/client'
+import { supabase } from '@/integrations/supabase/client';
 import Auth from './components/Auth';
 import Account from './components/Account';
 
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
+
+import HomePage from './pages/HomePage';
+import ProfilesPage from './pages/ProfilesPage';
+import ProfileDetailPage from './pages/ProfileDetailPage';
+import ServicesPage from './pages/ServicesPage';
+import RegisterPage from './pages/RegisterPage';
+
 function App() {
-  const [session, setSession] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [session, setSession] = useState(null);
 
   useEffect(() => {
-    // Set up auth state listener first
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("Auth state changed:", _event, session)
-      setSession(session)
-    })
-
-    // Then check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("Initial session check:", session)
-      setSession(session)
-      setLoading(false)
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [])
-
-  if (loading) {
-    return (
-      <div className="container mx-auto flex items-center justify-center h-screen">
-        <p>Loading...</p>
-      </div>
-    )
-  }
+    setSession(supabase.auth.session());
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+  }, []);
 
   return (
-    <div className="container mx-auto">
-      {!session ? <Auth /> : <Account key={session.user.id} session={session} />}
-    </div>
+    <Router>
+      <div className="container mx-auto">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+
+          <Route
+            path="/profiles"
+            element={session ? <ProfilesPage /> : <Navigate to="/" replace />}
+          />
+
+          <Route
+            path="/profile/:id"
+            element={session ? <ProfileDetailPage /> : <Navigate to="/" replace />}
+          />
+
+          <Route
+            path="/services"
+            element={session ? <ServicesPage /> : <Navigate to="/register" replace />}
+          />
+
+          <Route path="/register" element={<RegisterPage />} />
+
+          <Route
+            path="/account"
+            element={session ? <Account key={session.user.id} session={session} /> : <Navigate to="/register" replace />}
+          />
+
+          {!session && <Route path="/auth" element={<Auth />} />}
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
