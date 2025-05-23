@@ -22,7 +22,7 @@ import CookiesPage from './pages/CookiesPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 import ProcessAndFeesPage from './pages/ProcessAndFeesPage';
 import { AuthProvider } from "./contexts/AuthContext";
-import ProfilesPage from '@/pages/ProfilesPage';
+import ProfilesPage from '@/pages/ProfilePage';
 
 const App = () => {
   // Create QueryClient inside the component rather than at the module level
