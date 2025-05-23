@@ -1,29 +1,17 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from 'react-router-dom';
 import Logo from '@/components/Logo';
+import ProfileMenu from '@/components/ProfileMenu';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import NavBar from '@/components/NavBar';
 import { useAuth } from '@/contexts/AuthContext';
 
 const HomePage = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
-
-  const [email, setEmail] = useState('');
-
-  const handleSubscribe = () => {
-    if (!email) {
-      alert('Please enter your email address.');
-      return;
-    }
-    // Add your subscription logic here (API call, etc)
-    alert(`Subscribed successfully with email: ${email}`);
-    setEmail('');
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
@@ -43,21 +31,15 @@ const HomePage = () => {
             Connect with verified workers for all your household and business services in one place.
           </p>
           <div className="flex flex-col md:flex-row gap-4 justify-center">
-            <button
-              type="button"
-              onClick={() => navigate('/profiles')}
-              className="bg-blue-600 hover:bg-blue-700 text-white py-6 text-lg px-[32px] rounded-md"
-              aria-label="Find a Helper"
-            >
-              Find a Helper
-            </button>
+            {/* Updated Find a Helper Button linked to /services */}
+            <Link to="/services">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white py-6 text-lg px-[32px]">
+                Find a Helper
+              </Button>
+            </Link>
 
             <Link to={user ? "/services" : "/register"}>
-              <Button
-                variant="outline"
-                className="border-blue-600 text-blue-600 hover:bg-blue-50 px-8 py-6 text-lg"
-                aria-label={user ? 'Browse Services' : 'Register as a Worker'}
-              >
+              <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50 px-8 py-6 text-lg">
                 {user ? 'Browse Services' : 'Register as a Worker'}
               </Button>
             </Link>
@@ -69,38 +51,32 @@ const HomePage = () => {
       <section className="py-16 bg-gray-50 px-4">
         <div className="container mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">How MyHelper Works</h2>
-
+          
           <div className="grid md:grid-cols-3 gap-8">
             <Card>
               <CardHeader>
                 <CardTitle>Create an Account</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>
-                  Sign up as an employer looking for help or as a worker offering services. Workers need to complete verification and pay the R250 annual registration fee.
-                </p>
+                <p>Sign up as an employer looking for help or as a worker offering services. Workers need to complete verification and pay the R250 annual registration fee.</p>
               </CardContent>
             </Card>
-
+            
             <Card>
               <CardHeader>
                 <CardTitle>Connect & Chat</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>
-                  Browse worker profiles, view their experience, and contact them directly through our secure messaging system.
-                </p>
+                <p>Browse worker profiles, view their experience, and contact them directly through our secure messaging system.</p>
               </CardContent>
             </Card>
-
+            
             <Card>
               <CardHeader>
                 <CardTitle>Hire with Confidence</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>
-                  All workers are verified and screened. View their answers to interview questions and make informed hiring decisions.
-                </p>
+                <p>All workers are verified and screened. View their answers to interview questions and make informed hiring decisions.</p>
               </CardContent>
             </Card>
           </div>
@@ -118,7 +94,6 @@ const HomePage = () => {
               <TabsTrigger value="employers">For Employers</TabsTrigger>
               <TabsTrigger value="workers">For Workers</TabsTrigger>
             </TabsList>
-
             <TabsContent value="employers" className="p-6 bg-white rounded-b-lg shadow">
               <h3 className="text-2xl font-bold mb-4">Find Reliable Help</h3>
               <p className="mb-4">
@@ -134,7 +109,6 @@ const HomePage = () => {
                 <Button className="bg-blue-600 hover:bg-blue-700">Register as Employer</Button>
               </Link>
             </TabsContent>
-
             <TabsContent value="workers" className="p-6 bg-white rounded-b-lg shadow">
               <h3 className="text-2xl font-bold mb-4">Get Hired for Your Skills</h3>
               <p className="mb-4">
@@ -162,22 +136,8 @@ const HomePage = () => {
             Subscribe to our newsletter for the latest updates and new features.
           </p>
           <div className="flex flex-col md:flex-row gap-4 max-w-md mx-auto">
-            <Input
-              type="email"
-              placeholder="Your email address"
-              className="bg-white text-black"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              aria-label="Email address"
-            />
-            <Button
-              type="button"
-              className="bg-white text-blue-600 hover:bg-gray-100"
-              onClick={handleSubscribe}
-              aria-label="Subscribe to newsletter"
-            >
-              Subscribe
-            </Button>
+            <Input placeholder="Your email address" className="bg-white text-black" />
+            <Button className="bg-white text-blue-600 hover:bg-gray-100">Subscribe</Button>
           </div>
         </div>
       </section>
@@ -214,23 +174,13 @@ const HomePage = () => {
                 <li>Phone: +27 12 345 6789</li>
               </ul>
               <div className="flex space-x-4 mt-4">
-                {/* Social Icons */}
-                <a href="#" aria-label="Facebook" className="hover:text-blue-500">
-                  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" ><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
-                </a>
-                <a href="#" aria-label="Twitter" className="hover:text-blue-400">
-                  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" ><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723 10.1 10.1 0 01-3.127 1.184 4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" /></svg>
-                </a>
-                <a href="#" aria-label="Instagram" className="hover:text-pink-500">
-                  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" ><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z" /></svg>
-                </a>
+                <a href="#" aria-label="Facebook"><svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953h-1.513c-1.49 0-1.953.925-1.953 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.063 24 12.073z"/></svg></a>
+                <a href="#" aria-label="Twitter"><svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M23.954 4.569c-.885.389-1.83.654-2.825.775 1.014-.608 1.794-1.574 2.163-2.724-.949.564-2.005.974-3.127 1.195-.897-.959-2.178-1.559-3.594-1.559-2.723 0-4.928 2.206-4.928 4.928 0 .39.045.765.127 1.124-4.094-.205-7.725-2.165-10.157-5.144-.425.729-.666 1.577-.666 2.476 0 1.71.87 3.215 2.188 4.099-.807-.026-1.566-.247-2.229-.616v.061c0 2.388 1.698 4.384 3.95 4.835-.413.111-.849.171-1.296.171-.317 0-.626-.03-.927-.086.627 1.956 2.444 3.377 4.6 3.418-1.68 1.316-3.809 2.101-6.115 2.101-.397 0-.788-.023-1.174-.068 2.179 1.397 4.768 2.213 7.557 2.213 9.054 0 14-7.496 14-13.986 0-.21 0-.423-.015-.634.961-.694 1.8-1.562 2.46-2.549z"/></svg></a>
+                <a href="#" aria-label="Instagram"><svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.346 3.608 1.32.975.975 1.258 2.243 1.32 3.608.058 1.267.07 1.647.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.346 2.633-1.32 3.608-.975.975-2.243 1.258-3.608 1.32-1.267.058-1.647.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.346-3.608-1.32-.975-.975-1.258-2.243-1.32-3.608-.058-1.267-.07-1.647-.07-4.85s.012-3.584.07-4.85c.062-1.366.346-2.633 1.32-3.608.975-.975 2.243-1.258 3.608-1.32 1.267-.058 1.647-.07 4.85-.07M12 0C8.741 0 8.332.013 7.052.072 5.77.131 4.58.42 3.514 1.486 2.448 2.552 2.159 3.743 2.1 5.025 2.041 6.305 2.028 6.715 2.028 10c0 3.285.013 3.695.072 4.975.059 1.282.348 2.472 1.414 3.538 1.066 1.066 2.256 1.355 3.538 1.414 1.28.059 1.69.072 4.975.072 3.285 0 3.695-.013 4.975-.072 1.282-.059 2.472-.348 3.538-1.414 1.066-1.066 1.355-2.256 1.414-3.538.059-1.28.072-1.69.072-4.975 0-3.285-.013-3.695-.072-4.975-.059-1.282-.348-2.472-1.414-3.538C19.42.42 18.23.131 16.948.072 15.668.013 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a3.999 3.999 0 1 1 0-7.998 3.999 3.999 0 0 1 0 7.998zm6.406-11.845a1.44 1.44 0 1 0 0-2.88 1.44 1.44 0 0 0 0 2.88z"/></svg></a>
               </div>
             </div>
           </div>
-
-          <div className="text-center mt-12 text-sm text-gray-400">
-            &copy; {new Date().getFullYear()} MyHelper. All rights reserved.
-          </div>
+          <p className="mt-8 text-center text-sm text-gray-400">&copy; 2025 MyHelper. All rights reserved.</p>
         </div>
       </footer>
     </div>
