@@ -34,7 +34,7 @@ const HomePage = () => {
             {/* Updated Find a Helper Button linked to /services */}
             <Link to="/services">
               <Button className="bg-blue-600 hover:bg-blue-700 text-white py-6 text-lg px-[32px]">
-                Find a Helper
+                {user ? 'Browse Services' : 'Find a Helper'}
               </Button>
             </Link>
 
