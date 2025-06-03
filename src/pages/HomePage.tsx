@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,10 +32,10 @@ const HomePage = () => {
             Connect with verified workers for all your household and business services in one place.
           </p>
           <div className="flex flex-col md:flex-row gap-4 justify-center">
-            {/* Updated Find a Helper Button linked to /services */}
-            <Link to="/services">
+            {/* Updated Find a Helper Button linked to /profiles instead of /services */}
+            <Link to="/profiles">
               <Button className="bg-blue-600 hover:bg-blue-700 text-white py-6 text-lg px-[32px]">
-                {user ? 'Browse Services' : 'Find a Helper'}
+                {user ? 'Browse Helpers' : 'Find a Helper'}
               </Button>
             </Link>
 

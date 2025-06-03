@@ -46,6 +46,12 @@ const NavBar = () => {
               Services
             </Button>
           </Link>
+          <Link to="/profiles">
+            <Button variant="ghost" className="flex items-center gap-2">
+              <UserIcon size={18} />
+              Helpers
+            </Button>
+          </Link>
           <Link to="/help-support">
             <Button variant="ghost" className="flex items-center gap-2">
               <HelpCircleIcon size={18} />
