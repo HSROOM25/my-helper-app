@@ -10,6 +10,8 @@ import { useAuth } from '@/contexts/AuthContext';
 const NavBar = () => {
   const { user, signOut } = useAuth();
   
+  console.log('NavBar: Current user state:', user?.email);
+  
   return (
     <nav className="bg-white shadow-md p-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -65,7 +67,7 @@ const NavBar = () => {
             <div className="flex items-center space-x-2">
               <div className="flex items-center bg-green-100 px-3 py-1 rounded-full text-sm font-medium text-green-700 border border-green-200">
                 <div className="h-2 w-2 bg-green-500 rounded-full mr-2"></div>
-                <span>Logged in</span>
+                <span>Logged in as {user.user_metadata?.account_type || 'User'}</span>
               </div>
               <ProfileMenu />
             </div>

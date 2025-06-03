@@ -9,44 +9,148 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      users: {
+      "public.worker_profiles": {
         Row: {
-          country: string
-          email: string
-          email_address: string | null
-          gender: string
-          id: string
-          name: string
-          number: string
-          password_hash: string
-          surname: string
-          username: string
+          city: string | null
+          created_at: string
+          experience: string | null
+          full_name: string | null
+          hasPaid: string | null
+          id: number
+          profile_pic: string | null
+          "public.users(id)": string | null
+          user_type: string | null
         }
         Insert: {
-          country: string
-          email: string
-          email_address?: string | null
-          gender: string
-          id?: string
-          name: string
-          number: string
-          password_hash: string
-          surname: string
-          username: string
+          city?: string | null
+          created_at?: string
+          experience?: string | null
+          full_name?: string | null
+          hasPaid?: string | null
+          id?: number
+          profile_pic?: string | null
+          "public.users(id)"?: string | null
+          user_type?: string | null
         }
         Update: {
-          country?: string
-          email?: string
-          email_address?: string | null
-          gender?: string
-          id?: string
-          name?: string
-          number?: string
-          password_hash?: string
-          surname?: string
-          username?: string
+          city?: string | null
+          created_at?: string
+          experience?: string | null
+          full_name?: string | null
+          hasPaid?: string | null
+          id?: number
+          profile_pic?: string | null
+          "public.users(id)"?: string | null
+          user_type?: string | null
         }
         Relationships: []
+      }
+      user_password: {
+        Row: {
+          created_at: string | null
+          id: number
+          password_hash: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: never
+          password_hash: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: never
+          password_hash?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          country: string | null
+          email: string
+          gender: string | null
+          id: string
+          name: string | null
+          number: string | null
+          password_hash: string
+          role: string | null
+          surname: string | null
+          username: string | null
+        }
+        Insert: {
+          country?: string | null
+          email: string
+          gender?: string | null
+          id?: string
+          name?: string | null
+          number?: string | null
+          password_hash: string
+          role?: string | null
+          surname?: string | null
+          username?: string | null
+        }
+        Update: {
+          country?: string | null
+          email?: string
+          gender?: string | null
+          id?: string
+          name?: string | null
+          number?: string | null
+          password_hash?: string
+          role?: string | null
+          surname?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
+      "worker_profiles.user_id": {
+        Row: {
+          city: string | null
+          created_at: string | null
+          experience: string | null
+          full_name: string
+          haspaid: boolean
+          id: number
+          profile_pic: string | null
+          user_id: string
+          user_type: string | null
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string | null
+          experience?: string | null
+          full_name: string
+          haspaid?: boolean
+          id?: number
+          profile_pic?: string | null
+          user_id: string
+          user_type?: string | null
+        }
+        Update: {
+          city?: string | null
+          created_at?: string | null
+          experience?: string | null
+          full_name?: string
+          haspaid?: boolean
+          id?: number
+          profile_pic?: string | null
+          user_id?: string
+          user_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worker_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

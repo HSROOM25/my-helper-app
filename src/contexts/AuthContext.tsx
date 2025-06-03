@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -33,19 +34,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
       console.log('Auth state changed:', event, currentSession?.user?.email);
+      console.log('User metadata:', currentSession?.user?.user_metadata);
+      
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       
       if (event === 'SIGNED_IN') {
-        toast({
-          title: "Welcome back!",
-          description: "You have successfully logged in.",
-        });
+        console.log('User signed in successfully, account type:', currentSession?.user?.user_metadata?.account_type);
         
-        // Use setTimeout to prevent auth deadlocks
-        setTimeout(() => {
-          navigate('/');
-        }, 0);
+        toast({
+          title: "Welcome!",
+          description: `You have successfully logged in as a ${currentSession?.user?.user_metadata?.account_type || 'user'}.`,
+        });
       } else if (event === 'SIGNED_OUT') {
         toast({
           title: "Signed out",
@@ -62,6 +62,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Then check for existing session
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       console.log('Initial session check:', currentSession?.user?.email);
+      console.log('Initial user metadata:', currentSession?.user?.user_metadata);
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       setIsLoading(false);

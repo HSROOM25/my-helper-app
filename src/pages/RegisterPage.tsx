@@ -109,13 +109,15 @@ const RegisterPage = () => {
       
       toast({
         title: "Account created successfully!",
-        description: "You have been automatically logged in.",
+        description: `Welcome! You have been automatically logged in as a ${accountType}.`,
       });
       
-      // Redirect based on account type
+      // Redirect based on account type - workers go to their profile
       if (accountType === 'worker') {
+        console.log('Redirecting worker to profile page...');
         navigate('/worker-profile');
       } else {
+        console.log('Redirecting employer to profile page...');
         navigate('/employer-profile');
       }
       
