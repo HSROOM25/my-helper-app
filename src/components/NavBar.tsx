@@ -13,14 +13,23 @@ const NavBar = () => {
   
   console.log('NavBar: Current user state:', user?.email);
   console.log('NavBar: User account type:', user?.user_metadata?.account_type);
+  console.log('NavBar: Full user metadata:', user?.user_metadata);
   
   const handleProfileNavigation = () => {
+    console.log('NavBar: Profile navigation clicked');
+    console.log('NavBar: User metadata for navigation:', user?.user_metadata);
+    
     const accountType = user?.user_metadata?.account_type;
+    console.log('NavBar: Account type detected:', accountType);
+    
     if (accountType === 'worker') {
+      console.log('NavBar: Navigating to worker profile');
       navigate('/worker-profile');
     } else if (accountType === 'employer') {
+      console.log('NavBar: Navigating to employer profile');
       navigate('/employer-profile');
     } else {
+      console.log('NavBar: No account type found, defaulting to worker profile');
       // Default fallback
       navigate('/worker-profile');
     }

@@ -20,8 +20,9 @@ const ProfileMenu = () => {
   const { toast } = useToast();
   
   useEffect(() => {
-    console.log("Current user in ProfileMenu:", user);
-    console.log("Account type:", user?.user_metadata?.account_type);
+    console.log("ProfileMenu: Current user:", user);
+    console.log("ProfileMenu: Account type:", user?.user_metadata?.account_type);
+    console.log("ProfileMenu: Full user metadata:", user?.user_metadata);
   }, [user]);
   
   const handleSignOut = async () => {
@@ -42,14 +43,20 @@ const ProfileMenu = () => {
   };
 
   const getProfileLink = () => {
+    console.log("ProfileMenu: Getting profile link");
+    console.log("ProfileMenu: User metadata for link:", user?.user_metadata);
+    
     const accountType = user?.user_metadata?.account_type;
-    console.log("ProfileMenu - Account type for profile link:", accountType);
+    console.log("ProfileMenu: Account type for profile link:", accountType);
     
     if (accountType === 'worker') {
+      console.log("ProfileMenu: Returning worker profile link");
       return '/worker-profile';
     } else if (accountType === 'employer') {
+      console.log("ProfileMenu: Returning employer profile link");
       return '/employer-profile';
     } else {
+      console.log("ProfileMenu: No account type found, defaulting to worker profile");
       // Default fallback
       return '/worker-profile';
     }
