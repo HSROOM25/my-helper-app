@@ -9,7 +9,7 @@ const ProfilesPage = () => {
 
   useEffect(() => {
     const fetchWorkers = async () => {
-      const { data, error } = await supabase.from('worker_profiles').select('*');
+      const { data, error } = await supabase.from('public.worker_profiles').select('*');
       if (error) {
         console.error('Error fetching workers:', error.message);
         return;
