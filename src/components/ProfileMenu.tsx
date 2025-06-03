@@ -21,6 +21,7 @@ const ProfileMenu = () => {
   
   useEffect(() => {
     console.log("Current user in ProfileMenu:", user);
+    console.log("Account type:", user?.user_metadata?.account_type);
   }, [user]);
   
   const handleSignOut = async () => {
@@ -37,6 +38,20 @@ const ProfileMenu = () => {
         description: "There was a problem signing out. Please try again.",
         variant: "destructive"
       });
+    }
+  };
+
+  const getProfileLink = () => {
+    const accountType = user?.user_metadata?.account_type;
+    console.log("ProfileMenu - Account type for profile link:", accountType);
+    
+    if (accountType === 'worker') {
+      return '/worker-profile';
+    } else if (accountType === 'employer') {
+      return '/employer-profile';
+    } else {
+      // Default fallback
+      return '/worker-profile';
     }
   };
   
@@ -105,7 +120,7 @@ const ProfileMenu = () => {
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to={user.user_metadata?.user_type === 'worker' ? '/worker-profile' : '/employer-profile'} className="cursor-pointer flex w-full">
+                <Link to={getProfileLink()} className="cursor-pointer flex w-full">
                   <User className="mr-2 h-4 w-4" />
                   <span>My Profile</span>
                 </Link>
