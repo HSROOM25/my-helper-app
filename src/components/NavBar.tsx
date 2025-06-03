@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { BellIcon, HomeIcon, MenuIcon, InfoIcon, HelpCircleIcon, UserIcon } from "lucide-react";
 import Logo from '@/components/Logo';
@@ -9,8 +9,22 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const NavBar = () => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   
   console.log('NavBar: Current user state:', user?.email);
+  console.log('NavBar: User account type:', user?.user_metadata?.account_type);
+  
+  const handleProfileNavigation = () => {
+    const accountType = user?.user_metadata?.account_type;
+    if (accountType === 'worker') {
+      navigate('/worker-profile');
+    } else if (accountType === 'employer') {
+      navigate('/employer-profile');
+    } else {
+      // Default fallback
+      navigate('/worker-profile');
+    }
+  };
   
   return (
     <nav className="bg-white shadow-md p-4">
@@ -44,6 +58,12 @@ const NavBar = () => {
               About
             </Button>
           </Link>
+          {user && (
+            <Button variant="ghost" className="flex items-center gap-2" onClick={handleProfileNavigation}>
+              <UserIcon size={18} />
+              My Profile
+            </Button>
+          )}
         </div>
         
         <div className="flex items-center space-x-3">
